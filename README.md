@@ -18,6 +18,12 @@ Current version:
 0.9
 
 Known problems:
-- During panning the updates of the image doesn't work very well, so movement is jerky.
-- When panning there is a bug that sometimes keeps calculated data from being written to the internal array, leaving squares and bands of missing data.
+- When panning while calculations are running there is a bug that keeps some calculated data from being written to the internal array, leaving squares and bands of missing data. Workaround to recalculate: toggle sharpening (Ctrl+Q) on and off to force recalculation of the data.
 - Auto precision doesn't work perfectly in the entire set, at some places the precision limitations get very visible before the precision is increased.
+
+Quick start:
+- Use the mouse wheel to zoom in/out in the image.
+- Use Alt+Right to increase the number of iterations.
+- Use Ctrl+(Up/Down/Left/Right) to adjust colors.
+- Use F1 to bring up the Quick Guide.
+- Use Ctrl+N to restart with the entire set.
