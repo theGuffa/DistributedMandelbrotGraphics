@@ -15,7 +15,10 @@ Fetaures:
 - Image export to JPEG/PNG/TIFF/BMP.
 
 Current version:
-0.9
+- v0.9
+
+Requirement:
+- .NET 5.0
 
 Known problems:
 - When panning while calculations are running there is a bug that keeps some calculated data from being written to the internal array, leaving squares and bands of missing data. Workaround to recalculate: toggle sharpening (Ctrl+Q) on and off to force recalculation of the data.
