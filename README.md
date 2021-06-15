@@ -30,3 +30,7 @@ Quick start:
 - Use Ctrl+(Up/Down/Left/Right) to adjust colors.
 - Use F1 to bring up the Quick Guide.
 - Use Ctrl+N to restart with the entire set.
+
+Planned for the future:
+- DoubleDouble precision.
+- Nvidia CUDA calculations.
