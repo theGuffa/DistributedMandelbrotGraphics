@@ -45,11 +45,11 @@ namespace DistributedMandelbrotGraphics {
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(245, 50);
+			this.label2.Location = new System.Drawing.Point(240, 50);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(63, 15);
+			this.label2.Size = new System.Drawing.Size(72, 15);
 			this.label2.TabIndex = 1;
-			this.label2.Text = "Version 0.9";
+			this.label2.Text = "Version 0.9.1";
 			// 
 			// label3
 			// 

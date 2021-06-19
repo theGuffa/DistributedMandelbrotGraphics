@@ -15,7 +15,7 @@ namespace DistributedMandelbrotGraphics {
 		private readonly CalcManager _calcManager;
 		private ImageManager _imageManager;
 		private CalcTaskManager _calcTaskManager;
-		private Timer _updateTimer, _updateWorkersTimer, _panTimer;
+		private Timer _updateImageTimer, _updateWorkersTimer, _panTimer;
 		private CalcBatch _batch;
 		private string _fileName;
 		private Settings _settings;
@@ -33,36 +33,55 @@ namespace DistributedMandelbrotGraphics {
 		}
 
 		private void DMG_Load(object sender, EventArgs e) {
+			// Get user settings for the application
 			_settings = new Settings();
+			// Populate the worker list
 			_calcManager.LoadNodes(_settings);
+			// Create internal array and image from size settings
 			_imageManager = new ImageManager(_settings.Width, _settings.Height, _settings.Parts, ImageBox, _uiManager, _calcTaskManager);
+			// Draw initial set
 			Draw();
-			_updateTimer = new Timer { Interval = 20 };
-			_updateTimer.Tick += UpdateTick;
-			_updateTimer.Start();
-			_updateWorkersTimer = new Timer { Interval = 50 };
+			
+			// Create a timer for updating the image box
+			_updateImageTimer = new Timer { Interval = Settings.UpdateImageInterval };
+			_updateImageTimer.Tick += UpdateImageTick;
+			_updateImageTimer.Start();
+
+			// Create a timer for updating the worker list and the progress bar
+			_updateWorkersTimer = new Timer { Interval = Settings.UpdateWorkersInterval };
 			_updateWorkersTimer.Tick += UpdateWorkersTick;
 			_updateWorkersTimer.Start();
-			_panTimer = new Timer { Interval = 100 };
+
+			// Create a timer for detecting a period of no movement during panning
+			_panTimer = new Timer { Interval = Settings.PanInterval };
 			_panTimer.Tick += PanTick;
+			
+			// Mouse wheel events can't be set in the form designer
 			ImageBox.MouseWheel += ImageBox_MouseWheel;
+
+			// Create menu items for color sets and iterations
 			ColorSets.CreateMenuItems(MenuImageColorSet, SetColor);
 			ColorSets.SetMenu(_imageManager.ColorsInfo);
-			Depths.CreateMenuItems(MenuCalculationIterations, SetDepth);
-			Depths.SetMenu(_imageManager.Depth);
+			Iterations.CreateMenuItems(MenuCalculationIterations, SetIterations);
+			Iterations.SetMenu(_imageManager.Iterations);
+
+			// Set menu options
 			SetParameters();
 			SetPartsMenu();
 			SetShowWorkers(_settings.ShowWorkers, false);
 		}
 
-		private void UpdateTick(object sender, EventArgs e) {
-			_uiManager.Update(_calcManager, _imageManager);
+		// Event handler for image box updates
+		private void UpdateImageTick(object sender, EventArgs e) {
+			_uiManager.Update(_imageManager);
 		}
 
+		// Event handler for worker list updates
 		private void UpdateWorkersTick(object sender, EventArgs e) {
 			_uiManager.UpdateWorkers();
 		}
 
+		// Stop current calculations and prepare for complete recalculation
 		private void DeactivateBatch() {
 			if (_batch != null) {
 				_batch.Deactivate();
@@ -73,25 +92,34 @@ namespace DistributedMandelbrotGraphics {
 		}
 
 		private void AddTasks(List<CalcTask> tasks) {
+			// Create a batch if there isn't one
 			if (_batch == null) {
 				_batch = new CalcBatch(_calcTaskManager);
 			}
+			// Add tasks to the batch
 			_batch.Add(tasks);
 			if (_batch.Running) {
+				// As batch is already running, just currect the number of tasks
 				_imageManager.AddTasks(tasks.Count);
 			} else {
+				// Start the batch
 				_imageManager.ClearProgress();
 				_imageManager.AddTasks(tasks.Count);
 				_batch.RunAsync(_calcManager);
 			}
 		}
 
+		// Create tasks for drawing the entire image
 		private void Draw(float centerX = 0.5f, float centerY = 0.5f) {
+			// Stp the previuos batch if there is one
 			DeactivateBatch();
+			// Create task objects
 			List<CalcTask> tasks = _imageManager.DivideCalculation(centerX, centerY);
+			// Run the tasks in a new batch
 			AddTasks(tasks);
 		}
 
+		// Make the image box work in a center-when-smaller/zoom-when-bigger mode.
 		private void CheckImageBoxMode() {
 			if (_imageManager.W < ImageBox.Width && _imageManager.H < ImageBox.Height) {
 				ImageBox.SizeMode = PictureBoxSizeMode.CenterImage;
@@ -100,70 +128,91 @@ namespace DistributedMandelbrotGraphics {
 			}
 		}
 
+		// Pan the image by a number of pixels
 		private void PanBy(int dx, int dy) {
 			ImageBoxCalc calc = _imageManager.GetCalc();
+			// Convert screen pixels to image pixels
 			dx = (int)Math.Round(dx / calc.PicScale);
 			dy = (int)Math.Round(dy / calc.PicScale);
 			if (dx != 0 || dy != 0) {
+				// Pan tasks in the queues
 				_batch.Offset(dx, dy);
+				// Create tasks to draw the revealed parts of the image
 				List<CalcTask> tasks = _imageManager.Pan(dx, dy);
 				AddTasks(tasks);
+				// Show new coordinates
 				SetCoordinatesInfo();
 			}
 		}
 
+		// Zoom the image centered on a point by a specific rate
 		private void Zoom(int x, int y, bool zoomIn, decimal zoomRate) {
+			// Zoom the image
 			(float cx, float cy) = _imageManager.Zoom(x, y, zoomIn, zoomRate);
+			// Check auto precision
 			if (_imageManager.AutoPrecision) {
 				if (_imageManager.CheckAutoPrecision()) {
 					SetPrecisionMenu();
 				}
 			}
+			// Redraw centered on the zoom oint
 			Draw(cx, cy);
+			// Show new coordinates
 			SetCoordinatesInfo();
 		}
-
+		
+		// Pan the image 
 		private void Pan(int x, int y, bool force) {
 			int dx = x - _panX;
 			int dy = y - _panY;
-			if (force || Math.Abs(dx) > 5 || Math.Abs(dy) > 5) {
-				if (dx != 0 || dy != 0) {
-					_lastMove = DateTime.UtcNow;
-					_panX = x;
-					_panY = y;
-					PanBy(dx, dy);
-				}
+			// Check if forced or if movement is larg enough
+			if ((force && (dx != 0 || dy != 0)) || Math.Abs(dx) >= Settings.PanSensetivity || Math.Abs(dy) >= Settings.PanSensetivity) {
+				// 
+				_lastMove = DateTime.UtcNow;
+				_panX = x;
+				_panY = y;
+				PanBy(dx, dy);
 			}
 		}
 
+		// Start panning
 		private void StartPan(int x, int y) {
 			_panning = true;
+			// Store starting point
 			_panX = x;
 			_panY = y;
+			// Keep time for determining 
 			_lastMove = DateTime.UtcNow;
+			// Start timer for detecting periods of none movement
 			_panTimer.Start();
 		}
 
+		// Force pan to point and then stop panning
 		private void StopPan(int x, int y) {
 			Pan(x, y, true);
 			StopPan();
 		}
 
+		// Stop panning
 		private void StopPan() {
 			_panning = false;
 			_panTimer.Stop();
 		}
 
+		// Event handler for pan timer
 		private void PanTick(object sender, EventArgs e) {
 			if (_panning) {
-				Point p = MousePosition;
-				p = ImageBox.PointToClient(p);
-				if ((DateTime.UtcNow - _lastMove).TotalMilliseconds > 300 && (p.X != _panX || p.Y != _panY)) {
+				// Check for a period of no movement
+				if ((DateTime.UtcNow - _lastMove).TotalMilliseconds > Settings.PanInactivityMs) {
+					// Convert screen pixels to imagebox pixels
+					Point p = ImageBox.PointToClient(MousePosition);
+					// Pan image
 					Pan(p.X, p.Y, true);
 				}
 			}
 		}
 
+		// Methods for setting sections in the status bar
 		#region Set info
 
 		private void SetSizeInfo() {
@@ -175,7 +224,7 @@ namespace DistributedMandelbrotGraphics {
 		}
 
 		private void SetPrecisionInfo() {
-			StatusLabelPrecision.Text = $"{(_imageManager.AutoPrecision ? "Auto: " : String.Empty)}{_imageManager.Precision}, {_imageManager.Depth} iterations";
+			StatusLabelPrecision.Text = $"{(_imageManager.AutoPrecision ? "Auto: " : String.Empty)}{_imageManager.Precision}, {_imageManager.Iterations} iterations";
 		}
 
 		private void SetSmoothingInfo() {
@@ -188,8 +237,10 @@ namespace DistributedMandelbrotGraphics {
 
 		#endregion
 
+		// Methods for setting status of menu controls
 		#region Set menu
 
+		// Mark the selected item from a set of items
 		private void CheckMenuItem(ToolStripMenuItem item, params ToolStripMenuItem[] items) {
 			foreach (var i in items) {
 				i.Checked = i == item;
@@ -242,18 +293,18 @@ namespace DistributedMandelbrotGraphics {
 
 		private void SetPrecisionChangeMenu() {
 			MenuCalculationPrecisionDecrease.Enabled = !_imageManager.AutoPrecision && _imageManager.Precision != CalcPrecision.Single;
-			MenuCalculationPrecisionIncrease.Enabled = !_imageManager.AutoPrecision && _imageManager.Precision != CalcPrecision.Decimal;
+			MenuCalculationPrecisionIncrease.Enabled = !_imageManager.AutoPrecision && _imageManager.Precision != CalcPrecision.FixedPoint;
 		}
 
 		private void SetPrecisionMenu() {
 			ToolStripMenuItem item =
 				_imageManager.Precision == CalcPrecision.Single ? MenuCalculationPrecisionSingle :
 				_imageManager.Precision == CalcPrecision.Double ? MenuCalculationPrecisionDouble :
-				MenuCalculationPrecisionDecimal;
+				MenuCalculationPrecisionFixedPoint;
 			CheckMenuItem(item,
 				MenuCalculationPrecisionSingle,
 				MenuCalculationPrecisionDouble,
-				MenuCalculationPrecisionDecimal
+				MenuCalculationPrecisionFixedPoint
 			);
 			SetPrecisionChangeMenu();
 			SetPrecisionInfo();
@@ -263,15 +314,15 @@ namespace DistributedMandelbrotGraphics {
 			MenuCalculationPrecisionAuto.Checked = _imageManager.AutoPrecision;
 			MenuCalculationPrecisionSingle.Enabled = !_imageManager.AutoPrecision;
 			MenuCalculationPrecisionDouble.Enabled = !_imageManager.AutoPrecision;
-			MenuCalculationPrecisionDecimal.Enabled = !_imageManager.AutoPrecision;
+			MenuCalculationPrecisionFixedPoint.Enabled = !_imageManager.AutoPrecision;
 			SetPrecisionChangeMenu();
 			SetPrecisionInfo();
 		}
 
-		private void SetDepthMenu() {
-			Depths.SetMenu(_imageManager.Depth);
-			MenuCalculationIterationsDecrease.Enabled = _imageManager.Depth != Depths.MinValue;
-			MenuCalculationIterationsIncrease.Enabled = _imageManager.Depth != Depths.MaxValue;
+		private void SetIterationsMenu() {
+			Iterations.SetMenu(_imageManager.Iterations);
+			MenuCalculationIterationsDecrease.Enabled = _imageManager.Iterations != Iterations.MinValue;
+			MenuCalculationIterationsIncrease.Enabled = _imageManager.Iterations != Iterations.MaxValue;
 			SetPrecisionInfo();
 		}
 
@@ -317,15 +368,22 @@ namespace DistributedMandelbrotGraphics {
 
 		#endregion
 
+		// Methods for changing porperties
 		#region Set properties
 
 		private void SetSize(int w, int h) {
 			if (w != _imageManager.W || h != _imageManager.H) {
+				// Stop calculations
 				DeactivateBatch();
+				// Create new internal array and image
 				_imageManager.SetSize(w, h);
+				// Mark item in the size menu
 				SetSizeMenu();
+				// Set mode of image box
 				CheckImageBoxMode();
+				// Redraw image
 				Draw();
+				// Store size in user settings
 				_settings.Width = w;
 				_settings.Height = h;
 				_settings.Save();
@@ -334,28 +392,38 @@ namespace DistributedMandelbrotGraphics {
 
 		private void SetColor(ColorSetInfo info) {
 			if (info != _imageManager.ColorsInfo) {
+				// Create palette and redraw image
 				_imageManager.SetColor(info);
+				// Mark item in colors menu and show in status bar
 				SetColorMenu();
 			}
 		}
 
 		private void SetColorOffset(int offset) {
+			// Redraw image
 			_imageManager.SetColorOffset(offset);
+			// Show offset in status bar
 			SetColorInfo();
 		}
 
 		private void SetPrecision(CalcPrecision precision) {
 			if (precision != _imageManager.Precision) {
+				// Change precision
 				_imageManager.Precision = precision;
+				// Mark item in menu and update status bar
 				SetPrecisionMenu();
+				// Redraw image with the new precision
 				Draw();
 			}
 		}
 
 		private void ToggleAutoPrecision() {
+			// Toggle auto precison
 			_imageManager.AutoPrecision = !_imageManager.AutoPrecision;
+			// Mark/unmark menu item and update status bar
 			SetAutoPrecisionMenu();
 			if (_imageManager.AutoPrecision) {
+				// Check auto precision if it was turned on
 				if (_imageManager.CheckAutoPrecision()) {
 					SetPrecisionMenu();
 					Draw();
@@ -363,34 +431,42 @@ namespace DistributedMandelbrotGraphics {
 			}
 		}
 
-		private void SetDepth(int depth) {
-			if (depth != _imageManager.Depth) {
-				_imageManager.Depth = depth;
-				SetDepthMenu();
+		private void SetIterations(int iterations) {
+			if (iterations != _imageManager.Iterations) {
+				// Set iterations
+				_imageManager.Iterations = iterations;
+				// Mark menu item and update status bar
+				SetIterationsMenu();
+				// Redraw image with the new iterations
 				Draw();
 			}
 		}
 
 		private void SetSmoothing(SmoothingMode mode) {
 			if (mode != _imageManager.Smoothing) {
+				// Set smoothing mode
 				_imageManager.SetSmoothing(mode);
+				// Mark menu item and update status bar
 				SetSmoothingMenu();
+				// Redraw image with the new smoothing mode
 				Draw();
 			}
 		}
 
 		private void SetParts(int parts) {
 			if (parts != _imageManager.Parts) {
+				// Set parts count
 				SetParts(parts, true);
 			}
 		}
 
 		private void SetParameters() {
+			// Update menus and status bar for all parameters
 			SetSizeMenu();
 			SetColorMenu();
 			SetPrecisionMenu();
 			SetAutoPrecisionMenu();
-			SetDepthMenu();
+			SetIterationsMenu();
 			SetSmoothingMenu();
 			CheckImageBoxMode();
 			SetCoordinatesInfo();
@@ -398,19 +474,23 @@ namespace DistributedMandelbrotGraphics {
 
 		#endregion
 
+		// Event handlers for the image box
 		#region ImageBox
 
 		private void ImageBox_MouseWheel(object sender, MouseEventArgs e) {
+			// Determine zoom rate
 			decimal zoom = 1.1m;
 			switch (Control.ModifierKeys) {
 				case Keys.Shift: zoom = 1.01m; break;
 				case Keys.Control: zoom = 1.2m; break;
 				case Keys.Alt: zoom = 1.5m; break;
 			}
+			// Zoom image centered on mouse pointer
 			Zoom(e.X, e.Y, e.Delta > 0, zoom);
 		}
 
 		private void ImageBox_Resize(object sender, EventArgs e) {
+			// Update image box mode depending on size
 			CheckImageBoxMode();
 		}
 
@@ -440,9 +520,11 @@ namespace DistributedMandelbrotGraphics {
 
 		#endregion
 
+		// Event handlers for window menu
 		#region Menu
 
 		private void MenuFileNew_Click(object sender, EventArgs e) {
+			// Stop calculations and start over
 			DeactivateBatch();
 			_imageManager.Reset();
 			SetParameters();
@@ -515,9 +597,11 @@ namespace DistributedMandelbrotGraphics {
 		private void MenuImageSize5664x4248_Click(object sender, EventArgs e) => SetSize(5664, 4248);
 
 		private void MenuImageSizeCustom_Click(object sender, EventArgs e) {
+			// Show custom size dialog
 			ImageSize size = new ImageSize(_imageManager.W, _imageManager.H);
 			DialogResult result = size.ShowDialog();
 			if (result == DialogResult.OK) {
+				// Change size
 				int w = (int)size.ImageSizeNumericWidth.Value;
 				int h = (int)size.ImageSizeNumericHeight.Value;
 				SetSize(w, h);
@@ -535,34 +619,34 @@ namespace DistributedMandelbrotGraphics {
 		private void MenuCalculationPrecisionDecrease_Click(object sender, EventArgs e) {
 			switch (_imageManager.Precision) {
 				case CalcPrecision.Double: SetPrecision(CalcPrecision.Single); break;
-				case CalcPrecision.Decimal: SetPrecision(CalcPrecision.Double); break;
+				case CalcPrecision.FixedPoint: SetPrecision(CalcPrecision.Double); break;
 			}
 		}
 
 		private void MenuCalculationPrecisionIncrease_Click(object sender, EventArgs e) {
 			switch (_imageManager.Precision) {
 				case CalcPrecision.Single: SetPrecision(CalcPrecision.Double); break;
-				case CalcPrecision.Double: SetPrecision(CalcPrecision.Decimal); break;
+				case CalcPrecision.Double: SetPrecision(CalcPrecision.FixedPoint); break;
 			}
 		}
 
 		private void MenuCalculationPrecisionSingle_Click(object sender, EventArgs e) => SetPrecision(CalcPrecision.Single);
 		private void MenuCalculationPrecisionDouble_Click(object sender, EventArgs e) => SetPrecision(CalcPrecision.Double);
-		private void MenuCalculationPrecisionDecimal_Click(object sender, EventArgs e) => SetPrecision(CalcPrecision.Decimal);
+		private void MenuCalculationPrecisionFixedPoint128_Click(object sender, EventArgs e) => SetPrecision(CalcPrecision.FixedPoint);
 
 		private void MenuCalculationPrecisionAuto_Click(object sender, EventArgs e) => ToggleAutoPrecision();
 
 		private void MenuCalculationIterationsDecrease_Click(object sender, EventArgs e) {
-			int? depth = Depths.Previous(_imageManager.Depth);
+			int? depth = Iterations.Previous(_imageManager.Iterations);
 			if (depth.HasValue) {
-				SetDepth(depth.Value);
+				SetIterations(depth.Value);
 			}
 		}
 
 		private void MenuCalculationIterationsIncrease_Click(object sender, EventArgs e) {
-			int? depth = Depths.Next(_imageManager.Depth);
+			int? depth = Iterations.Next(_imageManager.Iterations);
 			if (depth.HasValue) {
-				SetDepth(depth.Value);
+				SetIterations(depth.Value);
 			}
 		}
 
@@ -589,22 +673,28 @@ namespace DistributedMandelbrotGraphics {
 
 		#endregion
 
-		#region Calculator List Menu
+		// Event handlers for worker list contect menu
+		#region Worker List Menu
 
 		private void CalculatorListMenuAdd_Click(object sender, EventArgs e) {
+			// Show add worker dialog
 			AddCalculator add = new AddCalculator();
 			DialogResult result = add.ShowDialog();
 			if (result == DialogResult.OK) {
+				// Add worker to list
 				_calcManager.Add(new TcpCalcNode(_calcManager, add.AddCalculatorTextBoxIP.Text, Int32.Parse(add.AddCalculatorTextBoxPort.Text)));
+				// Save nodes in user settings
 				_calcManager.SaveNodes(_settings);
 			}
 		}
 
 		private void CalculatorListMenuRemove_Click(object sender, EventArgs e) {
+			// Remove seleted item
 			ListView.SelectedListViewItemCollection selected = CalculatorList.SelectedItems;
 			foreach (ListViewItem item in selected) {
 				_calcManager.Remove(item);
 			}
+			// Save nodes in user settings
 			_calcManager.SaveNodes(_settings);
 		}
 
@@ -612,8 +702,11 @@ namespace DistributedMandelbrotGraphics {
 			ListView.SelectedListViewItemCollection selected = CalculatorList.SelectedItems;
 			foreach (ListViewItem item in selected) {
 				int index = item.Index;
+				// Run recheck in a separate thread
 				Task.Run(async () => {
+					// Recheck node
 					await _calcManager.Recheck(index);
+					// Save nodes in user settings
 					_calcManager.SaveNodes(_settings);
 				});
 			}
@@ -621,23 +714,29 @@ namespace DistributedMandelbrotGraphics {
 
 		private async Task Enable(List<CalcNode> nodes) {
 			foreach (CalcNode node in nodes) {
+				// Enable node
 				await _calcManager.Enable(node);
 			}
+			// Save nodes in user settings
 			_calcManager.SaveNodes(_settings);
 		}
 
 		private void CalculatorListMenuEnable_Click(object sender, EventArgs e) {
+			// Get selected nodes
 			ListView.SelectedListViewItemCollection selected = CalculatorList.SelectedItems;
 			List<CalcNode> nodes = new List<CalcNode>();
 			foreach (ListViewItem item in selected) {
 				nodes.Add((CalcNode)item.Tag);
 			}
+			// Run enable in a separate thread
 			Task.Run(() => Enable(nodes));
 		}
 
 		private void CalculatorListMenuDisable_Click(object sender, EventArgs e) {
+			// Get selected item
 			ListView.SelectedListViewItemCollection selected = CalculatorList.SelectedItems;
 			foreach (ListViewItem item in selected) {
+				// Disable node
 				CalcNode node = (CalcNode)item.Tag;
 				_calcManager.Disable(node);
 			}
@@ -646,19 +745,27 @@ namespace DistributedMandelbrotGraphics {
 
 		#endregion
 
+		// Event handlers for image box context menu
 		#region Image Menu
 
 		private void ImageMenuCenter_Click(object sender, EventArgs e) {
+			// Get coordinates where the mouse was clicked
 			Point p = new Point(ImageMenu.Left, ImageMenu.Top);
+			// Convert to image box coordinates
 			p = ImageBox.PointToClient(p);
+			// Calculate how much to pan by to center image
 			int dx = ImageBox.Width / 2 - p.X;
 			int dy = ImageBox.Height / 2 - p.Y;
+			// Pan image
 			PanBy(dx, dy);
 		}
 
 		private void ImageMenuZoom(bool zoomIn, decimal zoomRate) {
+			// Get coordinates where the mouse was clicked
 			Point p = new Point(ImageMenu.Left, ImageMenu.Top);
+			// Convert to image box coordinates
 			p = ImageBox.PointToClient(p);
+			// Zoom centered on coordinates
 			Zoom(p.X, p.Y, zoomIn, zoomRate);
 		}
 
@@ -667,6 +774,7 @@ namespace DistributedMandelbrotGraphics {
 		private void ImageMenuZoomIn20_Click(object sender, EventArgs e) => ImageMenuZoom(true, 1.2m);
 		private void ImageMenuZoomIn50_Click(object sender, EventArgs e) => ImageMenuZoom(true, 1.5m);
 		private void ImageMenuZoomOut1_Click(object sender, EventArgs e) => ImageMenuZoom(false, 1.01m);
+
 		private void ImageMenuZoomOut10_Click(object sender, EventArgs e) => ImageMenuZoom(false, 1.1m);
 		private void ImageMenuZoomOut20_Click(object sender, EventArgs e) => ImageMenuZoom(false, 1.2m);
 		private void ImageMenuZoomOut50_Click(object sender, EventArgs e) => ImageMenuZoom(false, 1.5m);

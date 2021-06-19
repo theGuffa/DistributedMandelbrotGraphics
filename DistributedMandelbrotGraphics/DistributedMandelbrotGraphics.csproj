@@ -18,6 +18,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Classes\DoubleDouble.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MandelCalculation\MandelCalculation.csproj" />
   </ItemGroup>
 

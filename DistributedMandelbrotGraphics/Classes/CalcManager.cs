@@ -17,7 +17,8 @@ namespace DistributedMandelbrotGraphics.Classes {
 			_uiManager = uiManager;
 			Nodes = new List<CalcNode>();
 		}
-
+		
+		// Get worker information from user settings and create nodes
 		public void LoadNodes(Settings settings) {
 			Add(new InternalCalcNode(this, Math.Max(1, Environment.ProcessorCount - 2), settings.InternalActive));
 			Json.JsonArray nodes = settings.NodesArray;
@@ -30,6 +31,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Save worker information to user settings
 		public void SaveNodes(Settings settings) {
 			settings.InternalActive = Nodes[0].State != NodeState.Disabled;
 			settings.NodesArray = Json.Array.Add(Nodes.Skip(1), n => n.ToJson());

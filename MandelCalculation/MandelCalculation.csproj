@@ -4,4 +4,12 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Compensated.cs" />
+    <Compile Remove="Dd.cs" />
+    <Compile Remove="DdReal.cs" />
+    <Compile Remove="DoubleDouble.cs" />
+    <Compile Remove="MathHelper.cs" />
+  </ItemGroup>
+
 </Project>

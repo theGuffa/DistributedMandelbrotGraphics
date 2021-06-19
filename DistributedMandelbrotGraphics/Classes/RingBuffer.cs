@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace DistributedMandelbrotGraphics.Classes {
 
+	// A circular buffer implemented on an array
 	public class RingBuffer<T> : IEnumerable<T> {
 
-		private T[] _buffer;
-		private int _size;
+		private readonly T[] _buffer;
+		private readonly int _size;
 		private int _first;
 		private int _last;
 
@@ -29,8 +30,9 @@ namespace DistributedMandelbrotGraphics.Classes {
 			_buffer[_last] = value;
 			if (Length == _size) {
 				_first = (_first + 1) % _size;
+			} else {
+				Length++;
 			}
-			Length++;
 		}
 
 		public IEnumerator<T> GetEnumerator() {

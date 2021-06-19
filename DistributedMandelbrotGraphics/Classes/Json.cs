@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DistributedMandelbrotGraphics.Classes {
 
+	// An object for parsing and creating JSON data.
 	public static class Json {
 
 		private static JsonValue _null = new JsonNullValue();

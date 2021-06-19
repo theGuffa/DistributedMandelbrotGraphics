@@ -13,9 +13,9 @@ namespace DistributedMandelbrotGraphics.Classes {
 		Done
 	}
 
+	// An object that keeps track of a calculation task
 	public class CalcTask : Calculation {
 
-		//private readonly UIManager _uiManager;
 		private CalcTaskManager _calcTaskManager;
 
 		public int BatchGroup { get; private set; }
@@ -31,6 +31,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 		public double CenterX => X + W / 2.0;
 		public double CenterY => Y + H / 2.0;
 
+		// Calculate the distance between a point and the center of this task
 		public double Distance(int x, int y) {
 			double distX = x - CenterX;
 			double distY = y - CenterY;
@@ -38,7 +39,6 @@ namespace DistributedMandelbrotGraphics.Classes {
 		}
 
 		public CalcTask(CalcTaskManager calcTaskManager, int batchGroup, int x, int y, int w, int h, decimal left, decimal top, decimal scale, CalcPrecision precision, int depth, SmoothingMode smoothing) : base(w, h, left, top, scale, precision, depth, smoothing) {
-			//_uiManager = uiManager;
 			_calcTaskManager = calcTaskManager;
 			BatchGroup = batchGroup;
 			State = TaskState.Created;
@@ -49,14 +49,12 @@ namespace DistributedMandelbrotGraphics.Classes {
 		public void SetState(TaskState newState) {
 			if (newState != State) {
 				State = newState;
-				//_uiManager.Enqueue(this);
 				_calcTaskManager.EnqueueChange(new ImageChange(this));
 			}
 		}
 
 		public void SetDone(int[,] pixels) {
 			State = TaskState.Done;
-			//_uiManager.Enqueue(this, pixels);
 			_calcTaskManager.EnqueueChange(new ImageChange(this, pixels));
 		}
 

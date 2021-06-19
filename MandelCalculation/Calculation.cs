@@ -8,7 +8,7 @@ namespace MandelCalculation {
 	public enum CalcPrecision {
 		Single = 1,
 		Double = 2,
-		Decimal = 3
+		FixedPoint = 3
 	}
 
 	public enum SmoothingMode {
@@ -17,6 +17,7 @@ namespace MandelCalculation {
 		Quadruple = 2
 	}
 
+	// An object that contains the result and statistics for a performed calculation
 	public class CalcResult {
 
 		public int[,] Pixels { get; private set; }
@@ -29,6 +30,7 @@ namespace MandelCalculation {
 
 	}
 
+	// An object that contains the information for calculating an image section and methods to do the calculation
 	public class Calculation {
 
 		public int W { get; protected set; }
@@ -63,38 +65,11 @@ namespace MandelCalculation {
 			Smoothing = (SmoothingMode)Int32.Parse(parts[7]);
 		}
 
-		private string FormatFloat(decimal f) => f.ToString(CultureInfo.InvariantCulture);
+		private static string FormatFloat(decimal f) => f.ToString(CultureInfo.InvariantCulture);
 
 		public override string ToString() {
 			return $"{W};{H};{FormatFloat(Left)};{FormatFloat(Top)};{FormatFloat(Scale)};{(int)Precision};{Depth};{(int)Smoothing}";
 		}
-
-		//private int[,] CalcSingle(decimal xScale, decimal yScale, int w, int h) {
-		//	int[,] result = new int[w, h];
-		//	float xs = (float)xScale;
-		//	float ys = (float)yScale;
-		//	float ci = (float)Top;
-		//	for (int y = 0; y < h; y++) {
-		//		float cr = (float)Left;
-		//		for (int x = 0; x < w; x++) {
-		//			float zr = cr;
-		//			float zi = ci;
-		//			int cnt = 0;
-		//			while (cnt < Depth) {
-		//				float zr2 = zr * zr;
-		//				float zi2 = zi * zi;
-		//				if (zr2 + zi2 >= 4) break;
-		//				zi = 2 * zr * zi + ci;
-		//				zr = zr2 - zi2 + cr;
-		//				cnt++;
-		//			}
-		//			result[x, y] = cnt;
-		//			cr += xs;
-		//		}
-		//		ci -= ys;
-		//	}
-		//	return result;
-		//}
 
 		private int[,] CalcSingle(int cores, decimal xScale, decimal yScale, int w, int h) {
 			int[,] result = new int[w, h];
@@ -120,33 +95,6 @@ namespace MandelCalculation {
 			return result;
 		}
 
-		//private int[,] CalcDouble(decimal xScale, decimal yScale, int w, int h) {
-		//	int[,] result = new int[w, h];
-		//	double xs = (double)xScale;
-		//	double ys = (double)yScale;
-		//	double ci = (double)Top;
-		//	for (int y = 0; y < h; y++) {
-		//		double cr = (double)Left;
-		//		for (int x = 0; x < w; x++) {
-		//			double zr = cr;
-		//			double zi = ci;
-		//			int cnt = 0;
-		//			while (cnt < Depth) {
-		//				double zr2 = zr * zr;
-		//				double zi2 = zi * zi;
-		//				if (zr2 + zi2 >= 4) break;
-		//				zi = 2 * zr * zi + ci;
-		//				zr = zr2 - zi2 + cr;
-		//				cnt++;
-		//			}
-		//			result[x, y] = cnt;
-		//			cr += xs;
-		//		}
-		//		ci -= ys;
-		//	}
-		//	return result;
-		//}
-
 		private int[,] CalcDouble(int cores, decimal xScale, decimal yScale, int w, int h) {
 			int[,] result = new int[w, h];
 			ParallelOptions opt = new ParallelOptions { MaxDegreeOfParallelism = cores };
@@ -171,82 +119,34 @@ namespace MandelCalculation {
 			return result;
 		}
 
-		//private int[,] CalcDecimal(decimal xScale, decimal yScale, int w, int h) {
-		//	int[,] result = new int[w, h];
-		//	decimal ci = Top;
-		//	for (int y = 0; y < h; y++) {
-		//		decimal cr = Left;
-		//		for (int x = 0; x < w; x++) {
-		//			decimal zr = cr;
-		//			decimal zi = ci;
-		//			int cnt = 0;
-		//			while (cnt < Depth && zr * zr + zi * zi < 4) {
-		//				decimal zr2 = zr * zr;
-		//				decimal zi2 = zi * zi;
-		//				if (zr2 + zi2 >= 4) break;
-		//				zi = 2 * zr * zi + ci;
-		//				zr = zr2 - zi2 + cr;
-		//				cnt++;
-		//			}
-		//			result[x, y] = cnt;
-		//			cr += xScale;
-		//		}
-		//		ci -= yScale;
-		//	}
-		//	return result;
-		//}
-
-		private int[,] CalcDecimal(int cores, decimal xScale, decimal yScale, int w, int h) {
+		private int[,] CalcFixedPoint(int cores, decimal xScale, decimal yScale, int w, int h) {
 			int[,] result = new int[w, h];
 			ParallelOptions opt = new ParallelOptions { MaxDegreeOfParallelism = cores };
+			FixedPoint two = new FixedPoint(2.0m);
 			Parallel.For(0, w * h, opt, i => {
 				int x = i % w;
 				int y = i / w;
-				decimal cr = Left + x * xScale;
-				decimal ci = Top - y * yScale;
-				decimal zr = cr;
-				decimal zi = ci;
 				int cnt = 0;
-				while (cnt < Depth && zr * zr + zi * zi < 4) {
-					decimal zr2 = zr * zr;
-					decimal zi2 = zi * zi;
-					if (zr2 + zi2 >= 4) break;
-					zi = 2 * zr * zi + ci;
-					zr = zr2 - zi2 + cr;
-					cnt++;
+				decimal r = Left + x * xScale;
+				decimal im = Top - y * yScale;
+				if (r > -4 && r < 4 && im > -4 && im < 4) {
+					FixedPoint cr = new FixedPoint(r);
+					FixedPoint ci = new FixedPoint(im);
+					FixedPoint zr = cr;
+					FixedPoint zi = ci;
+					while (cnt < Depth) {
+						FixedPoint zr2 = zr.Sqr();
+						FixedPoint zi2 = zi.Sqr();
+						if ((zr2 + zi2).ToDouble >= 4.0) break;
+						zi = two * zr * zi + ci;
+						zr = zr2 - zi2 + cr;
+						cnt++;
+					}
 				}
 				result[x, y] = cnt;
 			});
 			return result;
 		}
-
-		//public CalcResult Calculate() {
-		//	int w = W, h = H;
-		//	decimal xScale = Scale, yScale = Scale;
-		//	if (Smoothing != SmoothingMode.None) {
-		//		w *= 2;
-		//		xScale *= 0.5m;
-		//	}
-		//	if (Smoothing == SmoothingMode.Quadruple) {
-		//		h *= 2;
-		//		yScale *= 0.5m;
-		//	}
-		//	int[,] result = null;
-		//	Stopwatch sw = Stopwatch.StartNew();
-		//	switch (Precision) {
-		//		case CalcPrecision.Single:
-		//			result = CalcSingle(xScale, yScale, w, h);
-		//			break;
-		//		case CalcPrecision.Double:
-		//			result = CalcDouble(xScale, yScale, w, h);
-		//			break;
-		//		case CalcPrecision.Decimal:
-		//			result = CalcDecimal(xScale, yScale, w, h);
-		//			break;
-		//	}
-		//	sw.Stop();
-		//	return new CalcResult(result, CalcUtil.MicroSeconds(sw));
-		//}
 
 		public CalcResult Calculate(int cores) {
 			int w = W, h = H;
@@ -268,8 +168,8 @@ namespace MandelCalculation {
 				case CalcPrecision.Double:
 					result = CalcDouble(cores, xScale, yScale, w, h);
 					break;
-				case CalcPrecision.Decimal:
-					result = CalcDecimal(cores, xScale, yScale, w, h);
+				case CalcPrecision.FixedPoint:
+					result = CalcFixedPoint(cores, xScale, yScale, w, h);
 					break;
 			}
 			sw.Stop();

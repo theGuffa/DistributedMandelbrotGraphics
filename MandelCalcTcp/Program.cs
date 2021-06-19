@@ -55,7 +55,7 @@ namespace MandelCalcTcp {
 					}
 					IPAddress localAddr = IPAddress.Parse(ip);
 
-					Console.WriteLine($"Mandelbrot calculation worker - using {cores} cores, listening on {ip},{port}.");
+					Console.WriteLine($"Distrinbuted Mandelbrot Graphics v0.9.1 calculation worker - using {cores} cores, listening on {ip},{port}.");
 
 					server = new TcpListener(localAddr, port);
 

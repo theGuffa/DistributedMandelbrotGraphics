@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace DistributedMandelbrotGraphics.Classes {
 
+	// An object that holds the statistics for a performed calculation
 	public class PerformanceItem {
 
 		public long PixelCount { get; private set; }
@@ -31,6 +32,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 		Disabled
 	}
 
+	// A bse class for calculation nodes
 	public abstract class CalcNode {
 
 		private CalcManager _manager;
@@ -65,7 +67,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 		protected CalcNode(CalcManager manager, NodeState state) {
 			_manager = manager;
 			_state = state;
-			_performance = new RingBuffer<PerformanceItem>(100);
+			_performance = new RingBuffer<PerformanceItem>(Settings.NodePerformanceBufferSize);
 		}
 
 		public abstract Task<string> Check();
@@ -78,6 +80,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 	}
 
+	// The internal calculation node always present
 	public class InternalCalcNode : CalcNode {
 
 		public int Cores { get; private set; }
@@ -106,6 +109,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 	}
 
+	// A calculation node that sends calculation requests over HTTP to a worker on a web server
 	public class HttpCalcNode : CalcNode {
 
 		public string BaseUrl { get; private set; }
@@ -165,6 +169,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 	}
 
+	// A calculation node that sends calculation requests over TCP in the local network
 	public class TcpCalcNode : CalcNode {
 
 		private TcpClient _client;

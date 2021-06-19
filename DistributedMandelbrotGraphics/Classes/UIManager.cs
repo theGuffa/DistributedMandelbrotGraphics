@@ -33,11 +33,13 @@ namespace DistributedMandelbrotGraphics.Classes {
 			_updateNode = new Dictionary<CalcNode, NodeChange>();
 			_calcTaskManager = calcTaskManager;
 		}
-
+		
+		// Flag the image box to be invalidated
 		public void UpdateImage() {
 			_updateImage = true;
 		}
 
+		// Update worker list and progress bar
 		public void UpdateWorkers() {
 			lock (_sync) {
 
@@ -75,7 +77,8 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
-		public void Update(CalcManager _calcManager, ImageManager imageManager) {
+		// Update image box
+		public void Update(ImageManager imageManager) {
 			lock (_sync) {
 				List<ImageChange> items = _calcTaskManager.DequeueChanges();
 				foreach (ImageChange item in items) {
@@ -94,6 +97,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Add worker item in list and item in control array
 		public void AddNode(CalcNode node) {
 			lock (_sync) {
 				ListViewItem item = new ListViewItem(new string[] { node.Name, node.State.ToString(), node.PixelCount.ToString(), node.Speed });
@@ -103,6 +107,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Set node change if previous status is a smaller change
 		public void SetNodeChanged(CalcNode node, NodeChange change) {
 			if (WorkersVisible) {
 				lock (_sync) {
@@ -113,6 +118,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Flag progress bar to be updated
 		public void SetProgress(int value) {
 			_progress = value;
 			_updateProgress = true;

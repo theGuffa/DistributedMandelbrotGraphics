@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DistributedMandelbrotGraphics.Classes {
 
+	// A struct used for the color palette, wich quick access to color components
 	[StructLayout(LayoutKind.Explicit)]
 	public struct IntColor {
 
@@ -32,6 +33,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			B = b;
 		}
 
+		// Calculate average between two colors
 		public static IntColor Avg(IntColor c1, IntColor c2) {
 			return new IntColor(
 				(byte)((c1.R + c2.R) >> 1),
@@ -40,6 +42,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			);
 		}
 
+		// Calculate average between four colors
 		public static IntColor Avg(IntColor c1, IntColor c2, IntColor c3, IntColor c4) {
 			return new IntColor(
 				(byte)((c1.R + c2.R + c3.R + c4.R) >> 2),

@@ -9,6 +9,21 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 	public class Settings : ApplicationSettingsBase {
 
+		// The size of the buffer of past calculation times
+		public const int NodePerformanceBufferSize = 50;
+
+		// Rate for update timers
+		public const int UpdateImageInterval = 20;
+		public const int UpdateWorkersInterval = 50;
+		public const int PanInterval = 100;
+
+		// Number of pixels for panning to react immediately
+		public const int PanSensetivity = 5;
+
+		// Number of milliseconds to determine no movement while panning
+		public const int PanInactivityMs = 300;
+
+		// Active flag for the internal worker
 		[UserScopedSetting]
 		[DefaultSettingValue("true")]
 		public bool InternalActive {
@@ -16,6 +31,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			set => this["InternalActive"] = value;
 		}
 
+		// Settings for external workers
 		[UserScopedSetting]
 		[DefaultSettingValue("[]")]
 		public string Nodes {
@@ -23,11 +39,13 @@ namespace DistributedMandelbrotGraphics.Classes {
 			set => this["Nodes"] = value;
 		}
 
+		// Settings for external workers as a json array
 		public Json.JsonArray NodesArray {
 			get => Json.Parse(Nodes).AsArray;
 			set => Nodes = value.ToString();
 		}
 
+		// Setting for calculation parts
 		[UserScopedSetting]
 		[DefaultSettingValue("500")]
 		public int Parts {
@@ -35,6 +53,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			set => this["Parts"] = value;
 		}
 
+		// Settings for showing worker list
 		[UserScopedSetting]
 		[DefaultSettingValue("true")]
 		public bool ShowWorkers {
@@ -42,6 +61,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			set => this["ShowWorkers"] = value;
 		}
 
+		// Setting for image width
 		[UserScopedSetting]
 		[DefaultSettingValue("1920")]
 		public int Width {
@@ -49,6 +69,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			set => this["Width"] = value;
 		}
 
+		// Setting for image height
 		[UserScopedSetting]
 		[DefaultSettingValue("1080")]
 		public int Height {

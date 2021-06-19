@@ -35,7 +35,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 		public CalcPrecision Precision { get; set; }
 		public bool AutoPrecision { get; set; }
-		public int Depth { get; set; }
+		public int Iterations { get; set; }
 		public int Parts { get; set; }
 
 		private int DataW => Smoothing == SmoothingMode.None ? W : W * 2;
@@ -66,7 +66,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			Top = (decimal)H * 0.5m * Scale;
 			Precision = CalcPrecision.Single;
 			AutoPrecision = true;
-			Depth = 100;
+			Iterations = 100;
 			Smoothing = SmoothingMode.None;
 			ColorsInfo = ColorSets.Get("Standard");
 			ColorOffset = 0;
@@ -80,11 +80,15 @@ namespace DistributedMandelbrotGraphics.Classes {
 			SetColors();
 		}
 
-		public bool CheckAutoPrecision() {
-			CalcPrecision expected =
-				Scale < 0.0000000000000001m ? CalcPrecision.Decimal :
+		private CalcPrecision GetExpectedPrecision() {
+			return
+				Scale < 0.0000000000000001m ? CalcPrecision.FixedPoint :
 				Scale < 0.0000001m ? CalcPrecision.Double :
 				CalcPrecision.Single;
+		}
+
+		public bool CheckAutoPrecision() {
+			CalcPrecision expected = GetExpectedPrecision();
 			bool change = Precision != expected;
 			Precision = expected;
 			return change;
@@ -107,16 +111,21 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 		public (float cx, float cy) Zoom(int x, int y, bool zoomIn, decimal zoom) {
 			ImageBoxCalc calc = GetCalc();
+			// Convert from screen pixels to image ixels
 			(decimal fx, decimal fy) = calc.BoxToImage(x, y);
+			// Calculate complex coordinates for the image point
 			decimal ix = Left + fx * Scale;
 			decimal iy = Top - fy * Scale;
+			// Change scale
 			if (zoomIn) {
 				Scale /= zoom;
 			} else {
 				Scale *= zoom;
 			}
+			// Calculate the top left coordinates from the coordinates using the new scale
 			Left = ix - fx * Scale;
 			Top = iy + fy * Scale;
+			// Return the image point in relation to the whole image
 			return ((float)(fx / W), (float)(fy / H));
 		}
 
@@ -427,7 +436,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
-		private CalcTask CreateTask(int x, int y, int w, int h, decimal left, decimal top) => new CalcTask(_calcTaskManager, _batchGroup, x, y, w, h, left, top, Scale, Precision, Depth, Smoothing);
+		private CalcTask CreateTask(int x, int y, int w, int h, decimal left, decimal top) => new CalcTask(_calcTaskManager, _batchGroup, x, y, w, h, left, top, Scale, Precision, Iterations, Smoothing);
 
 		public List<CalcTask> DivideCalculation(float centerX = 0.5f, float centerY = 0.5f) {
 			double k = (double)H / (double)W;
@@ -615,7 +624,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 				.Add("colors", ColorsInfo.Code)
 				.Add("offset", ColorOffset)
 				.Add("precision", Precision.ToString())
-				.Add("depth", Depth)
+				.Add("depth", Iterations)
 				.Add("smoothing", Smoothing.ToString())
 				.ToString();
 			File.WriteAllText(fileName, data, Encoding.UTF8);
@@ -642,7 +651,8 @@ namespace DistributedMandelbrotGraphics.Classes {
 				switch (precisionName) {
 					case "Single": precision = CalcPrecision.Single; break;
 					case "Double": precision = CalcPrecision.Double; break;
-					case "Decimal": precision = CalcPrecision.Decimal; break;
+					case "Decimal": // Loads v0.9 files with "Decimal" as "FixedPoint"
+					case "FixedPoint": precision = CalcPrecision.FixedPoint; break;
 					default: throw new Exception($"Unknown precision '{precisionName}'.");
 				}
 				int depth = obj["depth"].AsInteger;
@@ -663,7 +673,8 @@ namespace DistributedMandelbrotGraphics.Classes {
 				ColorOffset = offset;
 				_intColors = ColorsInfo.CreateColors();
 				Precision = precision;
-				Depth = depth;
+				AutoPrecision = GetExpectedPrecision() == Precision;
+				Iterations = depth;
 				Smoothing = smoothing;
 				SetSize(w, h);
 				return true;

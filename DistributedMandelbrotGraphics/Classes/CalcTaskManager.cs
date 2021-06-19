@@ -23,6 +23,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 	}
 
+	// An object that syncronises access to calculation tasks and calculation results
 	public class CalcTaskManager {
 
 		private readonly object _sync;
@@ -79,21 +80,6 @@ namespace DistributedMandelbrotGraphics.Classes {
 				_tasks.Clear();
 			}
 		}
-
-		//public List<CalcTask> GetDone() {
-		//	List<CalcTask> done = new List<CalcTask>();
-		//	lock (_sync) {
-		//		_tasks.RemoveAll(c => {
-		//			if (c.State == TaskState.Done) {
-		//				done.Add(c);
-		//				return true;
-		//			} else {
-		//				return false;
-		//			}
-		//		});
-		//	}
-		//	return done;
-		//}
 
 		public void EnqueueChange(ImageChange change) {
 			lock (_sync) {

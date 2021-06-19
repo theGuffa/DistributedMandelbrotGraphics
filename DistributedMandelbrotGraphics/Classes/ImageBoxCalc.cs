@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 namespace DistributedMandelbrotGraphics.Classes {
 
+	// An object used to convert between image box coordinates and image coordinates
 	public class ImageBoxCalc {
 
 		public decimal BoxW { get; private set; }
@@ -19,10 +20,12 @@ namespace DistributedMandelbrotGraphics.Classes {
 			BoxW = box.Width;
 			BoxH = box.Height;
 			if (W <= BoxW && H <= BoxH) {
+				// Center mode, so the image is 1:1
 				PicScale = 1.0m;
 				XOfs = Math.Floor((BoxW - W) / 2.0m);
 				YOfs = Math.Floor((BoxH - H) / 2.0m);
 			} else {
+				// Zoom mode, so the image is inside the image box
 				decimal xScale = BoxW / (decimal)W;
 				decimal yScale = BoxH / (decimal)H;
 				if (yScale < xScale) {

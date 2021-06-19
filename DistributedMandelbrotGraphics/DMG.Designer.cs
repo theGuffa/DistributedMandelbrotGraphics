@@ -79,7 +79,7 @@ namespace DistributedMandelbrotGraphics {
 			this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
 			this.MenuCalculationPrecisionSingle = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuCalculationPrecisionDouble = new System.Windows.Forms.ToolStripMenuItem();
-			this.MenuCalculationPrecisionDecimal = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuCalculationPrecisionFixedPoint = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
 			this.MenuCalculationPrecisionAuto = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuCalculationIterations = new System.Windows.Forms.ToolStripMenuItem();
@@ -534,7 +534,7 @@ namespace DistributedMandelbrotGraphics {
             this.toolStripMenuItem7,
             this.MenuCalculationPrecisionSingle,
             this.MenuCalculationPrecisionDouble,
-            this.MenuCalculationPrecisionDecimal,
+            this.MenuCalculationPrecisionFixedPoint,
             this.toolStripMenuItem8,
             this.MenuCalculationPrecisionAuto});
 			this.MenuCalculationPrecision.Name = "MenuCalculationPrecision";
@@ -545,7 +545,7 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.MenuCalculationPrecisionDecrease.Name = "MenuCalculationPrecisionDecrease";
 			this.MenuCalculationPrecisionDecrease.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Up)));
-			this.MenuCalculationPrecisionDecrease.Size = new System.Drawing.Size(178, 22);
+			this.MenuCalculationPrecisionDecrease.Size = new System.Drawing.Size(180, 22);
 			this.MenuCalculationPrecisionDecrease.Text = "Decrease";
 			this.MenuCalculationPrecisionDecrease.Click += new System.EventHandler(this.MenuCalculationPrecisionDecrease_Click);
 			// 
@@ -553,46 +553,46 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.MenuCalculationPrecisionIncrease.Name = "MenuCalculationPrecisionIncrease";
 			this.MenuCalculationPrecisionIncrease.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Down)));
-			this.MenuCalculationPrecisionIncrease.Size = new System.Drawing.Size(178, 22);
+			this.MenuCalculationPrecisionIncrease.Size = new System.Drawing.Size(180, 22);
 			this.MenuCalculationPrecisionIncrease.Text = "Increase";
 			this.MenuCalculationPrecisionIncrease.Click += new System.EventHandler(this.MenuCalculationPrecisionIncrease_Click);
 			// 
 			// toolStripMenuItem7
 			// 
 			this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-			this.toolStripMenuItem7.Size = new System.Drawing.Size(175, 6);
+			this.toolStripMenuItem7.Size = new System.Drawing.Size(177, 6);
 			// 
 			// MenuCalculationPrecisionSingle
 			// 
 			this.MenuCalculationPrecisionSingle.Name = "MenuCalculationPrecisionSingle";
-			this.MenuCalculationPrecisionSingle.Size = new System.Drawing.Size(178, 22);
+			this.MenuCalculationPrecisionSingle.Size = new System.Drawing.Size(180, 22);
 			this.MenuCalculationPrecisionSingle.Text = "Single";
 			this.MenuCalculationPrecisionSingle.Click += new System.EventHandler(this.MenuCalculationPrecisionSingle_Click);
 			// 
 			// MenuCalculationPrecisionDouble
 			// 
 			this.MenuCalculationPrecisionDouble.Name = "MenuCalculationPrecisionDouble";
-			this.MenuCalculationPrecisionDouble.Size = new System.Drawing.Size(178, 22);
+			this.MenuCalculationPrecisionDouble.Size = new System.Drawing.Size(180, 22);
 			this.MenuCalculationPrecisionDouble.Text = "Double";
 			this.MenuCalculationPrecisionDouble.Click += new System.EventHandler(this.MenuCalculationPrecisionDouble_Click);
 			// 
-			// MenuCalculationPrecisionDecimal
+			// MenuCalculationPrecisionFixedPoint
 			// 
-			this.MenuCalculationPrecisionDecimal.Name = "MenuCalculationPrecisionDecimal";
-			this.MenuCalculationPrecisionDecimal.Size = new System.Drawing.Size(178, 22);
-			this.MenuCalculationPrecisionDecimal.Text = "Decimal";
-			this.MenuCalculationPrecisionDecimal.Click += new System.EventHandler(this.MenuCalculationPrecisionDecimal_Click);
+			this.MenuCalculationPrecisionFixedPoint.Name = "MenuCalculationPrecisionFixedPoint";
+			this.MenuCalculationPrecisionFixedPoint.Size = new System.Drawing.Size(180, 22);
+			this.MenuCalculationPrecisionFixedPoint.Text = "FixedPoint";
+			this.MenuCalculationPrecisionFixedPoint.Click += new System.EventHandler(this.MenuCalculationPrecisionFixedPoint128_Click);
 			// 
 			// toolStripMenuItem8
 			// 
 			this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-			this.toolStripMenuItem8.Size = new System.Drawing.Size(175, 6);
+			this.toolStripMenuItem8.Size = new System.Drawing.Size(177, 6);
 			// 
 			// MenuCalculationPrecisionAuto
 			// 
 			this.MenuCalculationPrecisionAuto.Name = "MenuCalculationPrecisionAuto";
 			this.MenuCalculationPrecisionAuto.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-			this.MenuCalculationPrecisionAuto.Size = new System.Drawing.Size(178, 22);
+			this.MenuCalculationPrecisionAuto.Size = new System.Drawing.Size(180, 22);
 			this.MenuCalculationPrecisionAuto.Text = "Auto";
 			this.MenuCalculationPrecisionAuto.Click += new System.EventHandler(this.MenuCalculationPrecisionAuto_Click);
 			// 
@@ -610,7 +610,7 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.MenuCalculationIterationsDecrease.Name = "MenuCalculationIterationsDecrease";
 			this.MenuCalculationIterationsDecrease.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Left)));
-			this.MenuCalculationIterationsDecrease.Size = new System.Drawing.Size(175, 22);
+			this.MenuCalculationIterationsDecrease.Size = new System.Drawing.Size(180, 22);
 			this.MenuCalculationIterationsDecrease.Text = "Decrease";
 			this.MenuCalculationIterationsDecrease.Click += new System.EventHandler(this.MenuCalculationIterationsDecrease_Click);
 			// 
@@ -618,14 +618,14 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.MenuCalculationIterationsIncrease.Name = "MenuCalculationIterationsIncrease";
 			this.MenuCalculationIterationsIncrease.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Right)));
-			this.MenuCalculationIterationsIncrease.Size = new System.Drawing.Size(175, 22);
+			this.MenuCalculationIterationsIncrease.Size = new System.Drawing.Size(180, 22);
 			this.MenuCalculationIterationsIncrease.Text = "Increase";
 			this.MenuCalculationIterationsIncrease.Click += new System.EventHandler(this.MenuCalculationIterationsIncrease_Click);
 			// 
 			// toolStripMenuItem9
 			// 
 			this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-			this.toolStripMenuItem9.Size = new System.Drawing.Size(172, 6);
+			this.toolStripMenuItem9.Size = new System.Drawing.Size(177, 6);
 			// 
 			// MenuCalculationSmoothing
 			// 
@@ -1116,7 +1116,6 @@ namespace DistributedMandelbrotGraphics {
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
 		private System.Windows.Forms.ToolStripMenuItem MenuCalculationPrecisionSingle;
 		private System.Windows.Forms.ToolStripMenuItem MenuCalculationPrecisionDouble;
-		private System.Windows.Forms.ToolStripMenuItem MenuCalculationPrecisionDecimal;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem8;
 		private System.Windows.Forms.ToolStripMenuItem MenuCalculationPrecisionAuto;
 		private System.Windows.Forms.ToolStripMenuItem MenuCalculationIterations;
@@ -1165,6 +1164,7 @@ namespace DistributedMandelbrotGraphics {
 		private System.Windows.Forms.ToolStripStatusLabel StatusLabelCoordinates;
 		public System.Windows.Forms.PictureBox ImageBox;
 		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.ToolStripMenuItem MenuCalculationPrecisionFixedPoint;
 	}
 }
 

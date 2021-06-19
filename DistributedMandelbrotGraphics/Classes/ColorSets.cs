@@ -8,15 +8,7 @@ using System.Windows.Forms;
 
 namespace DistributedMandelbrotGraphics.Classes {
 
-	public enum ColorSet {
-		Standard,
-		Warm,
-		Cold,
-		ChocolatePeach,
-		RedBlue,
-		Test
-	}
-
+	// An object that holds the information about a color set
 	public class ColorSetInfo {
 
 		public string Code { get; private set; }
@@ -42,6 +34,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 		private static ColorSetInfo[] _info;
 
 		static ColorSets() {
+			// Creates a list of all color sets
 			_info = new ColorSetInfo[] {
 				new ColorSetInfo("Standard", "Standard", Color.Black, Color.White, Color.Blue, Color.Green),
 				new ColorSetInfo("Warm", "Warm", Color.Red, Color.Yellow, Color.Orange, Color.Purple),
@@ -68,6 +61,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			};
 		}
 
+		// Creates menu items for the color sets
 		public static void CreateMenuItems(ToolStripMenuItem menu, Action<ColorSetInfo> SetColor) {
 			foreach (var info in _info) {
 				info.MenuItem = new ToolStripMenuItem(info.Name);
@@ -76,29 +70,45 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Marks a specific color set menu item
 		public static void SetMenu(ColorSetInfo info) {
-			foreach (var color in _info) {
+			foreach (ColorSetInfo color in _info) {
 				color.MenuItem.Checked = color == info;
 			}
 		}
 
+		// Gets a colors set from its name
 		public static ColorSetInfo Get(string code) {
-			return _info.Single(i => i.Code == code);
+			foreach (var info in _info) {
+				if (info.Code == code) {
+					return info;
+				}
+			}
+			return null;
 		}
 
+		// Gets the index of a color set
 		public static int Index(ColorSetInfo info) {
-			return _info.Select((c, i) => c == info ? i : (int?)null).Single(i => i.HasValue).Value;
+			int i = 0;
+			while (_info[i] != info) {
+				i++;
+			}
+			return i;
 		}
 
+		// Creates a palette from a set of colors
 		public static IntColor[] CreateColors(params Color[] points) {
 			List<IntColor> colors = new List<IntColor>();
 			for (int i = 0; i < points.Length; i++) {
+				// Get starting and ending color
 				Color color1 = points[i];
 				Color color2 = points[(i + 1) % points.Length];
+				// Get highest intensity difference for te color channels
 				int dist = Math.Max(Math.Max(
 					Math.Abs(color1.R - color2.R),
 					Math.Abs(color1.G - color2.G)),
 					Math.Abs(color1.B - color2.B));
+				// Create colors fading from starting color to ending color
 				for (int ofs = 0; ofs < dist; ofs++) {
 					colors.Add(new IntColor(
 						(byte)(color1.R + (color2.R - color1.R) * ofs / dist),
