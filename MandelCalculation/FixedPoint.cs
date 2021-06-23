@@ -176,7 +176,7 @@ namespace MandelCalculation {
 			}
 		}
 
-		public static FixedPoint operator *(FixedPoint a, FixedPoint b) {
+		public static  FixedPoint operator *(FixedPoint a, FixedPoint b) {
 
 			// Each value is split into five 28 bit components.
 			// Layout: n20.n8 n28 n22+n6 n28 n28

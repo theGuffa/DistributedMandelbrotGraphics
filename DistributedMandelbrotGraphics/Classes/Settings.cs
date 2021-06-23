@@ -23,6 +23,9 @@ namespace DistributedMandelbrotGraphics.Classes {
 		// Number of milliseconds to determine no movement while panning
 		public const int PanInactivityMs = 300;
 
+		// Maximum size of squares created when panning
+		public const int MaxTaskSquareSize = 500;
+
 		// Active flag for the internal worker
 		[UserScopedSetting]
 		[DefaultSettingValue("true")]

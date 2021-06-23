@@ -23,6 +23,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 		private IntColor[] _intColors;
 		private int _totalTasks, _tasksDone;
 		private int _batchGroup;
+		private Action _onComplete;
 
 		public decimal Left { get; private set; }
 		public decimal Top { get; private set; }
@@ -41,7 +42,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 		private int DataW => Smoothing == SmoothingMode.None ? W : W * 2;
 		private int DataH => Smoothing == SmoothingMode.Quadruple ? H * 2 : H;
 
-		public ImageManager(int w, int h, int parts, PictureBox box, UIManager uiManager, CalcTaskManager calcTaskManager) {
+		public ImageManager(int w, int h, int parts, PictureBox box, UIManager uiManager, CalcTaskManager calcTaskManager, Action onComplete) {
 			_uiManager = uiManager;
 			_calcTaskManager = calcTaskManager;
 			_sync = new object();
@@ -54,6 +55,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			_totalTasks = 0;
 			_tasksDone = 0;
 			_batchGroup = 0;
+			_onComplete = onComplete;
 		}
 
 		public void NextBatch() {
@@ -80,6 +82,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			SetColors();
 		}
 
+		// Calculate the requred precision to use for the current parameters
 		private CalcPrecision GetExpectedPrecision() {
 			return
 				Scale < 0.0000000000000001m ? CalcPrecision.FixedPoint :
@@ -87,6 +90,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 				CalcPrecision.Single;
 		}
 
+		// Check if the precision should be changed
 		public bool CheckAutoPrecision() {
 			CalcPrecision expected = GetExpectedPrecision();
 			bool change = Precision != expected;
@@ -94,25 +98,26 @@ namespace DistributedMandelbrotGraphics.Classes {
 			return change;
 		}
 
+		// Set the progress bar according to the completed tasks
 		private void SetProgress() {
 			_uiManager.SetProgress(_totalTasks > 0 ? (_tasksDone < _totalTasks ? 1000 * _tasksDone / _totalTasks : 1000) : 0);
 		}
 
+		// Reset progress counters and the progress bar
 		public void ClearProgress() {
 			_totalTasks = 0;
 			_tasksDone = 0;
 			SetProgress();
 		}
 
+		// Add tasks to the statistics for the progress bar
 		public void AddTasks(int cnt) {
 			_totalTasks += cnt;
 			SetProgress();
 		}
 
-		public (float cx, float cy) Zoom(int x, int y, bool zoomIn, decimal zoom) {
-			ImageBoxCalc calc = GetCalc();
-			// Convert from screen pixels to image ixels
-			(decimal fx, decimal fy) = calc.BoxToImage(x, y);
+		// Zoom the image based on image pixels
+		private (float cx, float cy) ZoomImage(decimal fx, decimal fy, bool zoomIn, decimal zoom) {
 			// Calculate complex coordinates for the image point
 			decimal ix = Left + fx * Scale;
 			decimal iy = Top - fy * Scale;
@@ -129,41 +134,49 @@ namespace DistributedMandelbrotGraphics.Classes {
 			return ((float)(fx / W), (float)(fy / H));
 		}
 
-		//public (decimal cx, decimal cy) ZoomOut(int x, int y, decimal zoom) {
-		//	ImageBoxCalc calc = GetCalc();
-		//	(decimal fx, decimal fy) = calc.BoxToImage(x, y);
-		//	decimal ix = Left + fx * Scale;
-		//	decimal iy = Top - fy * Scale;
-		//	Scale *= zoom;
-		//	Left = ix - fx * Scale;
-		//	Top = iy + fy * Scale;
-		//	return (fx / W, fy / H);
-		//}
+		// Zoom the image based on image box pixels
+		public (float cx, float cy) Zoom(int x, int y, bool zoomIn, decimal zoom) {
+			ImageBoxCalc calc = GetCalc();
+			// Convert from image box pixels to image pixels
+			(decimal fx, decimal fy) = calc.BoxToImage(x, y);
+			return ZoomImage(fx, fy, zoomIn, zoom);
+		}
 
+		// Change image size
 		public void SetSize(int w, int h) {
+			// Discard old image
 			_image.Dispose();
-			decimal cx = Left + Scale * W / 2;
-			decimal cy = Top - Scale * H / 2;
+			// Calculate center point
+			decimal cx = Left + Scale * W / 2m;
+			decimal cy = Top - Scale * H / 2m;
+			// Normalize scale
 			Scale *= W + H;
+			// Set new size
 			W = w;
 			H = h;
+			// Set new scale
 			Scale /= W + H;
-			Left = cx - Scale * W / 2;
-			Top = cy + Scale * H / 2;
+			// Calculate coordinates
+			Left = cx - Scale * W / 2m;
+			Top = cy + Scale * H / 2m;
+			// Create new image and internal array
 			_image = new Bitmap(W, H);
 			_data = new int[DataW, DataH];
 			_box.Image = _image;
 		}
 
+		// Change smoothing mode and create new internal array
 		public void SetSmoothing(SmoothingMode smoothing) {
 			Smoothing = smoothing;
 			_data = new int[DataW, DataH];
 		}
 
+		// Redraw entire image
 		private void SetColors() {
 			SetColors(0, 0, W, H);
 		}
 
+		// Redraw a section of the image
 		private void SetColors(int x, int y, int w, int h) {
 			lock (_sync) {
 				//Stopwatch sw = Stopwatch.StartNew();
@@ -174,6 +187,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Methods only called from synchronized code
 		#region Locked
 
 		private const int _createdColor = unchecked((int)0xffd3d3d3); // LightGray
@@ -187,6 +201,8 @@ namespace DistributedMandelbrotGraphics.Classes {
 			return 0;
 		}
 
+		// Redraw a section of the image
+		// Multi threaded version that somehow breaks out of the synchronization and crashes
 		private void SetColorsMulti(int drawX, int drawY, int drawW, int drawH) {
 			int offset = ColorOffset;
 			int dataW = _data.GetLength(0);
@@ -252,6 +268,8 @@ namespace DistributedMandelbrotGraphics.Classes {
 			_image.UnlockBits(bitmapData);
 		}
 
+		// Redraw a section of the image
+		// Single threaded version that is slower but doesn't crash
 		private void SetColorsSingle(int drawX, int drawY, int drawW, int drawH) {
 			int offset = ColorOffset;
 			int dataW = _data.GetLength(0);
@@ -322,6 +340,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 		#endregion
 
+		// Change the color set
 		public void SetColor(ColorSetInfo info) {
 			ColorsInfo = info;
 			_intColors = ColorsInfo.CreateColors();
@@ -329,6 +348,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			_uiManager.UpdateImage();
 		}
 
+		// Change the offset in the color set
 		public void SetColorOffset(int offset) {
 			ColorOffset = (_intColors.Length + offset) % _intColors.Length;
 			SetColors();
@@ -337,6 +357,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 		public ImageBoxCalc GetCalc() => new ImageBoxCalc(_box, W, H);
 
+		// Calculates an area to invalidate based on image pixels
 		private void Invalidate(int x, int y, int w, int h) {
 			ImageBoxCalc calc = GetCalc();
 			(decimal fx, decimal fy) = calc.ImageToBox(x, y);
@@ -347,6 +368,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			_box.Invalidate(new Rectangle(px, py, pw, ph));
 		}
 
+		// Get the part of a task that is still inside the image (due to panning)
 		private (int x1, int y1, int x2, int y2) GetInside(CalcTask task) {
 			int x1 = task.X;
 			int y1 = task.Y;
@@ -359,12 +381,14 @@ namespace DistributedMandelbrotGraphics.Classes {
 			return (x1, y1, x2, y2);
 		}
 
+		// Special color values to mark areas of the image
 		private enum FillColor {
 			Created = -1,
 			Working = -2,
 			Transparent = -3
 		}
 
+		// Fill an area of the image with a marking color
 		private void FillData(int x1, int y1, int x2, int y2, FillColor color) {
 			if (Smoothing != SmoothingMode.None) {
 				x1 *= 2;
@@ -381,6 +405,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Fill an area of the image representing a task
 		private void FillData(CalcTask task, FillColor color) {
 			(int x1, int y1, int x2, int y2) = GetInside(task);
 			int w = x2 - x1;
@@ -408,10 +433,13 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Put the result of a task into the internal array
 		public void DrawTask(CalcTask task, int[,] data) {
 			if (task.BatchGroup == _batchGroup) {
+				// Get the relevant part of the area
 				(int x1, int y1, int x2, int y2) = GetInside(task);
 				if (x2 > x1 && y2 > y1) {
+					// Adjust the coordinates according to the smoothing mode
 					int dataX1 = x1, dataY1 = y1, dataX2 = x2, dataY2 = y2, taskX = task.X, taskY = task.Y;
 					if (task.Smoothing != SmoothingMode.None) {
 						dataX1 *= 2;
@@ -423,21 +451,31 @@ namespace DistributedMandelbrotGraphics.Classes {
 						dataY2 *= 2;
 						taskY *= 2;
 					}
+					// Copy the data
 					for (int y = dataY1; y < dataY2; y++) {
 						for (int x = dataX1; x < dataX2; x++) {
 							_data[taskX + x, taskY + y] = data[x, y];
 						}
 					}
+					// Update image
 					SetColors(task.X + x1, task.Y + y1, x2 - x1, y2 - y1);
+					// Cause part of the image to be updated
 					Invalidate(task.X + x1, task.Y + y1, x2 - x1, y2 - y1);
 				}
+				// Count the completed task
 				_tasksDone++;
 				SetProgress();
+				// Call the callback if the image is complete
+				if (_tasksDone == _totalTasks) {
+					_onComplete();
+				}
 			}
 		}
 
+		// Create a task using the current parameters
 		private CalcTask CreateTask(int x, int y, int w, int h, decimal left, decimal top) => new CalcTask(_calcTaskManager, _batchGroup, x, y, w, h, left, top, Scale, Precision, Iterations, Smoothing);
 
+		// Divide the image into squares to calculate
 		public List<CalcTask> DivideCalculation(float centerX = 0.5f, float centerY = 0.5f) {
 			double k = (double)H / (double)W;
 			int w = (int)Math.Round(Math.Sqrt(Parts / k));
@@ -470,11 +508,10 @@ namespace DistributedMandelbrotGraphics.Classes {
 			return tasks;
 		}
 
-		private const int MaxTaskSize = 500;
-
+		// Divide a section of the image into squares
 		private void AddTasks(List<CalcTask> tasks, int x, int y, int w, int h) {
-			int cntX = w / MaxTaskSize;
-			int cntY = h / MaxTaskSize;
+			int cntX = w / Settings.MaxTaskSquareSize;
+			int cntY = h / Settings.MaxTaskSquareSize;
 			int tileW = cntX == 0 ? w : (w + cntX - 1) / cntX;
 			int tileH = cntY == 0 ? h : (h + cntY - 1) / cntY;
 			for (int yy = y; yy < y + h; yy += tileH) {
@@ -486,6 +523,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Create tasks to redraw a section of the image
 		public List<CalcTask> CreateBatchPan(int dx, int dy) {
 			List<CalcTask> tasks = new List<CalcTask>();
 			int x = 0;
@@ -506,6 +544,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			return tasks;
 		}
 
+		// Determine variable for a loop depending on direction
 		private (int start, int end, int add) GetLoop(int d, int size) {
 			if (d < 0) {
 				return (size - 1, -1, -1);
@@ -514,6 +553,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Move data in the internal array
 		private void PanData(int dx, int dy) {
 			int w = W, h = H;
 			if (Smoothing != SmoothingMode.None) {
@@ -544,6 +584,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Move the data in the image
 		private void PanImage(int dx, int dy) {
 			BitmapData bitmapData = _image.LockBits(new Rectangle(0, 0, W, H), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			int w = W, h = H;
@@ -575,6 +616,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			_image.UnlockBits(bitmapData);
 		}
 
+		// Move data the internal array and in the image
 		public List<CalcTask> Pan(int dx, int dy) {
 			lock (_sync) {
 				PanData(-dx, -dy);
@@ -586,6 +628,34 @@ namespace DistributedMandelbrotGraphics.Classes {
 			return CreateBatchPan(dx, dy);
 		}
 
+		// Determine if the data for a task contains a specific value
+		public bool TaskContainsValue(CalcTask task, int value) {
+			for (int y = 0; y < task.H; y++) {
+				for (int x = 0; x < task.W; x++) {
+					if (_data[task.X + x, task.Y + y] == value) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		// Reduce the value of each item in the data that is higher than the current iterations
+		public void ReduceIterations() {
+			int w = DataW;
+			int h = DataH;
+			for (int y = 0; y < h; y++) {
+				for (int x = 0; x < w; x++) {
+					if (_data[x, y] > Iterations) {
+						_data[x, y] = Iterations;
+					}
+				}
+			}
+			SetColors();
+			_uiManager.UpdateImage();
+		}
+
+		// Export the image to a file
 		public void SaveImage(string fileName) {
 			string ext = Path.GetExtension(fileName);
 			switch (ext.ToUpperInvariant()) {
@@ -614,6 +684,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 		private string FormatDecimal(decimal value) => value.ToString(CultureInfo.InvariantCulture);
 
+		// Save the parameters to a file
 		public void SaveCoordinates(string fileName) {
 			string data = Json.Object
 				.Add("left", FormatDecimal(Left))
@@ -635,6 +706,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 			return Decimal.Parse(s, CultureInfo.InvariantCulture);
 		}
 
+		// Load the parameters from a file
 		public bool LoadCoordinates(string fileName) {
 			try {
 				string data = File.ReadAllText(fileName, Encoding.UTF8);

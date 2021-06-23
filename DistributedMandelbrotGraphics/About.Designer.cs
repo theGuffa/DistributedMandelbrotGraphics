@@ -49,7 +49,7 @@ namespace DistributedMandelbrotGraphics {
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(72, 15);
 			this.label2.TabIndex = 1;
-			this.label2.Text = "Version 0.9.1";
+			this.label2.Text = "Version 0.9.2";
 			// 
 			// label3
 			// 

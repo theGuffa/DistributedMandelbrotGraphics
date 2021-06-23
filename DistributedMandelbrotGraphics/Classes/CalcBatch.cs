@@ -54,7 +54,9 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 		// Run the batch in a separate thread
 		public void RunAsync(CalcManager calc) {
-			Task.Run(() => Run(calc));
+			Task.Run(async () => {
+				await Run(calc);
+			});
 		}
 
 		private async Task Run(CalcManager calc) {

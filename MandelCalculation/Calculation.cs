@@ -53,6 +53,7 @@ namespace MandelCalculation {
 			Smoothing = smoothing;
 		}
 
+		// Creates the calculation from its string representation
 		public Calculation(string settings) {
 			string[] parts = settings.Split(';');
 			W = Int32.Parse(parts[0]);
@@ -67,6 +68,7 @@ namespace MandelCalculation {
 
 		private static string FormatFloat(decimal f) => f.ToString(CultureInfo.InvariantCulture);
 
+		// The string representation of the calculation to send to external workers
 		public override string ToString() {
 			return $"{W};{H};{FormatFloat(Left)};{FormatFloat(Top)};{FormatFloat(Scale)};{(int)Precision};{Depth};{(int)Smoothing}";
 		}

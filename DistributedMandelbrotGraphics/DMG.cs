@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,6 +19,8 @@ namespace DistributedMandelbrotGraphics {
 		private Timer _updateImageTimer, _updateWorkersTimer, _panTimer;
 		private CalcBatch _batch;
 		private string _fileName;
+		private decimal _sequenceZoom;
+		private bool _sequenceRepeat;
 		private Settings _settings;
 
 		private bool _panning = false;
@@ -30,6 +33,9 @@ namespace DistributedMandelbrotGraphics {
 			_uiManager = new UIManager(this, _calcTaskManager);
 			_calcManager = new CalcManager(_uiManager);
 			_batch = null;
+			_fileName = null;
+			_sequenceZoom = 1.01m;
+			_sequenceRepeat = false;
 		}
 
 		private void DMG_Load(object sender, EventArgs e) {
@@ -38,7 +44,7 @@ namespace DistributedMandelbrotGraphics {
 			// Populate the worker list
 			_calcManager.LoadNodes(_settings);
 			// Create internal array and image from size settings
-			_imageManager = new ImageManager(_settings.Width, _settings.Height, _settings.Parts, ImageBox, _uiManager, _calcTaskManager);
+			_imageManager = new ImageManager(_settings.Width, _settings.Height, _settings.Parts, ImageBox, _uiManager, _calcTaskManager, OnComplete);
 			// Draw initial set
 			Draw();
 			
@@ -69,6 +75,16 @@ namespace DistributedMandelbrotGraphics {
 			SetParameters();
 			SetPartsMenu();
 			SetShowWorkers(_settings.ShowWorkers, false);
+		}
+
+		private void OnComplete() {
+			if (_sequenceRepeat) {
+				if (InvokeRequired) {
+					Invoke(new Action(ExportAndZoom));
+				} else {
+					ExportAndZoom();
+				}
+			}
 		}
 
 		// Event handler for image box updates
@@ -111,11 +127,17 @@ namespace DistributedMandelbrotGraphics {
 
 		// Create tasks for drawing the entire image
 		private void Draw(float centerX = 0.5f, float centerY = 0.5f) {
-			// Stp the previuos batch if there is one
+			// Stop the previuos batch if there is one
 			DeactivateBatch();
 			// Create task objects
 			List<CalcTask> tasks = _imageManager.DivideCalculation(centerX, centerY);
 			// Run the tasks in a new batch
+			AddTasks(tasks);
+		}
+
+		// Create tasks for redrawing parts of the image containing a specific iteration value
+		private void DrawIterationsOver(int oldIterations) {
+			List<CalcTask> tasks = _imageManager.DivideCalculation().Where(t => _imageManager.TaskContainsValue(t, oldIterations)).ToList();
 			AddTasks(tasks);
 		}
 
@@ -291,6 +313,18 @@ namespace DistributedMandelbrotGraphics {
 			SetColorInfo();
 		}
 
+		private void SetImageSequenceZoomMenu() {
+			MenuImageSequenceZoom1.Checked = _sequenceZoom == 1.01m;
+			MenuImageSequenceZoom2.Checked = _sequenceZoom == 1.02m;
+			MenuImageSequenceZoom3.Checked = _sequenceZoom == 1.03m;
+		}
+
+		private void SetImageSequenceMenu() {
+			MenuImageSequenceStep.Enabled = _fileName != null;
+			MenuImageSequenceRun.Enabled = _fileName != null;
+			MenuImageSequenceRun.Checked = _sequenceRepeat;
+		}
+
 		private void SetPrecisionChangeMenu() {
 			MenuCalculationPrecisionDecrease.Enabled = !_imageManager.AutoPrecision && _imageManager.Precision != CalcPrecision.Single;
 			MenuCalculationPrecisionIncrease.Enabled = !_imageManager.AutoPrecision && _imageManager.Precision != CalcPrecision.FixedPoint;
@@ -433,12 +467,24 @@ namespace DistributedMandelbrotGraphics {
 
 		private void SetIterations(int iterations) {
 			if (iterations != _imageManager.Iterations) {
+				int oldIterations = _imageManager.Iterations;
 				// Set iterations
 				_imageManager.Iterations = iterations;
+				// Check if drawing is complete
+				if (_batch == null || !_batch.Running) {
+					if (iterations > oldIterations) {
+						// Only readraw parts of the image that contains pixels at the maximum
+						DrawIterationsOver(oldIterations);
+					} else {
+						// Just limit the values in the result to the new iterations
+						_imageManager.ReduceIterations();
+					}
+				} else {
+					// Redraw image with the new iterations
+					Draw();
+				}
 				// Mark menu item and update status bar
 				SetIterationsMenu();
-				// Redraw image with the new iterations
-				Draw();
 			}
 		}
 
@@ -464,6 +510,8 @@ namespace DistributedMandelbrotGraphics {
 			// Update menus and status bar for all parameters
 			SetSizeMenu();
 			SetColorMenu();
+			SetImageSequenceZoomMenu();
+			SetImageSequenceMenu();
 			SetPrecisionMenu();
 			SetAutoPrecisionMenu();
 			SetIterationsMenu();
@@ -533,13 +581,15 @@ namespace DistributedMandelbrotGraphics {
 
 		private void MenuFileLoad_Click(object sender, EventArgs e) {
 			OpenFileDialog.Title = "Load parameters";
-			OpenFileDialog.FileName = _fileName;
+			if (_fileName != null) {
+				OpenFileDialog.FileName = Path.GetFileNameWithoutExtension(_fileName);
+			}
 			DialogResult result = OpenFileDialog.ShowDialog();
 			if (result == DialogResult.OK) {
 				DeactivateBatch();
 				string name = OpenFileDialog.FileName;
 				if (_imageManager.LoadCoordinates(name)) {
-					_fileName = Path.GetFileNameWithoutExtension(name);
+					_fileName = name;
 					SetParameters();
 					Draw();
 				}
@@ -548,12 +598,14 @@ namespace DistributedMandelbrotGraphics {
 
 		private void MenuFileSaveAs_Click(object sender, EventArgs e) {
 			SaveFileDialog.Title = "Save parameters";
-			SaveFileDialog.FileName = _fileName;
+			if (_fileName != null) {
+				SaveFileDialog.FileName = Path.GetFileNameWithoutExtension(_fileName);
+			}
 			DialogResult result = SaveFileDialog.ShowDialog();
 			if (result == DialogResult.OK) {
-				string name = SaveFileDialog.FileName;
-				_imageManager.SaveCoordinates(name);
-				_fileName = Path.GetFileNameWithoutExtension(name);
+				_fileName = SaveFileDialog.FileName;
+				_imageManager.SaveCoordinates(_fileName);
+				SetImageSequenceMenu();
 			}
 		}
 
@@ -564,13 +616,41 @@ namespace DistributedMandelbrotGraphics {
 
 		private void MenuImageExportAs_Click(object sender, EventArgs e) {
 			ExportImageDialog.Title = "Export image";
-			ExportImageDialog.FileName = _fileName;
+			if (_fileName != null) {
+				ExportImageDialog.FileName = Path.GetFileNameWithoutExtension(_fileName);
+			}
 			DialogResult result = ExportImageDialog.ShowDialog();
 			if (result == DialogResult.OK) {
-				string name = ExportImageDialog.FileName;
-				_imageManager.SaveImage(name);
-				_fileName = Path.GetFileNameWithoutExtension(name);
+				_fileName = ExportImageDialog.FileName;
+				_imageManager.SaveImage(_fileName);
+				SetImageSequenceMenu();
 			}
+		}
+
+		private void ExportIndexed() {
+			string name = Path.GetFileNameWithoutExtension(_fileName);
+			int cnt = 0;
+			while (cnt < name.Length && Char.IsDigit(name[name.Length - 1 - cnt])) {
+				cnt++;
+			}
+			int index;
+			if (cnt == 0) {
+				cnt = 5;
+				index = 99999;
+			} else {
+				index = Int32.Parse(name.Substring(name.Length - cnt)) - 1;
+				name = name.Substring(0, name.Length - cnt);
+			}
+			string num = index.ToString();
+			while (num.Length < cnt) {
+				num = "0" + num;
+			}
+			_fileName = Path.Combine(Path.GetDirectoryName(_fileName), name + num + ".jpg");
+			_imageManager.SaveImage(_fileName);
+		}
+
+		private void MenuImageExportIndexed_Click(object sender, EventArgs e) {
+			ExportIndexed();
 		}
 
 		private void MenuImageSize800x600_Click(object sender, EventArgs e) => SetSize(800, 600);
@@ -606,6 +686,53 @@ namespace DistributedMandelbrotGraphics {
 				int h = (int)size.ImageSizeNumericHeight.Value;
 				SetSize(w, h);
 			}
+		}
+
+		private void ImageMenuZoomCenter(bool zoomIn, decimal zoomRate) {
+			Zoom(ImageBox.Width / 2, ImageBox.Height / 2, zoomIn, zoomRate);
+		}
+
+		private void MenuImageZoomIn1_Click(object sender, EventArgs e) => ImageMenuZoomCenter(true, 1.01m);
+		private void MenuImageZoomIn10_Click(object sender, EventArgs e) => ImageMenuZoomCenter(true, 1.1m);
+		private void MenuImageZoomIn20_Click(object sender, EventArgs e) => ImageMenuZoomCenter(true, 1.2m);
+		private void MenuImageZoomIn50_Click(object sender, EventArgs e) => ImageMenuZoomCenter(true, 1.5m);
+		private void MenuImageZoomOut1_Click(object sender, EventArgs e) => ImageMenuZoomCenter(false, 1.01m);
+		private void MenuImageZoomOut10_Click(object sender, EventArgs e) => ImageMenuZoomCenter(false, 1.1m);
+		private void MenuImageZoomOut20_Click(object sender, EventArgs e) => ImageMenuZoomCenter(false, 1.2m);
+		private void MenuImageZoomOut50_Click(object sender, EventArgs e) => ImageMenuZoomCenter(false, 1.5m);
+
+		private void MenuImageSequenceZoom1_Click(object sender, EventArgs e) {
+			_sequenceZoom = 1.01m;
+			SetImageSequenceZoomMenu();
+		}
+
+		private void MenuImageSequenceZoom2_Click(object sender, EventArgs e) {
+			_sequenceZoom = 1.02m;
+			SetImageSequenceZoomMenu();
+		}
+
+		private void MenuImageSequenceZoom3_Click(object sender, EventArgs e) {
+			_sequenceZoom = 1.03m;
+			SetImageSequenceZoomMenu();
+		}
+
+		private void ExportAndZoom() {
+			ExportIndexed();
+			Zoom(ImageBox.Width / 2, ImageBox.Height / 2, false, _sequenceZoom);
+		}
+
+		private void MenuImageSequenceStep_Click(object sender, EventArgs e) {
+			ExportAndZoom();
+		}
+
+		private void MenuImageSequenceRun_Click(object sender, EventArgs e) {
+			if (_sequenceRepeat) {
+				_sequenceRepeat = false;
+			} else {
+				_sequenceRepeat = true;
+				ExportAndZoom();
+			}
+			SetImageSequenceMenu();
 		}
 
 		private void MenuImageColorSetPrevious_Click(object sender, EventArgs e) => SetColor(ColorSets.Previous(_imageManager.ColorsInfo));
@@ -763,7 +890,7 @@ namespace DistributedMandelbrotGraphics {
 		private void ImageMenuZoom(bool zoomIn, decimal zoomRate) {
 			// Get coordinates where the mouse was clicked
 			Point p = new Point(ImageMenu.Left, ImageMenu.Top);
-			// Convert to image box coordinates
+			// Convert from sceen coordinates to image box coordinates
 			p = ImageBox.PointToClient(p);
 			// Zoom centered on coordinates
 			Zoom(p.X, p.Y, zoomIn, zoomRate);

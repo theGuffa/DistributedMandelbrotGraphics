@@ -62,6 +62,16 @@ namespace DistributedMandelbrotGraphics {
 			this.MenuImageSize5664x4248 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
 			this.MenuImageSizeCustom = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageZoom = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageZoomIn1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageZoomIn10 = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageZoomIn20 = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageZoomIn50 = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
+			this.MenuImageZoomOut1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageZoomOut10 = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageZoomOut20 = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageZoomOut50 = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuImageColorSet = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuImageColorSetPrevious = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuImageColorSetNext = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,6 +82,13 @@ namespace DistributedMandelbrotGraphics {
 			this.MenuImageColorOffsetDecrease1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuImageColorOffsetIncrease1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuImageExportAs = new System.Windows.Forms.ToolStripMenuItem();
+			this.sequenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.zoomOut1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageSequenceZoom1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageSequenceZoom2 = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageSequenceZoom3 = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
+			this.MenuImageSequenceStep = new System.Windows.Forms.ToolStripMenuItem();
 			this.calculationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuCalculationPrecision = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuCalculationPrecisionDecrease = new System.Windows.Forms.ToolStripMenuItem();
@@ -134,6 +151,7 @@ namespace DistributedMandelbrotGraphics {
 			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.ImageBox = new System.Windows.Forms.PictureBox();
 			this.panel1 = new System.Windows.Forms.Panel();
+			this.MenuImageSequenceRun = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu.SuspendLayout();
 			this.Status.SuspendLayout();
 			this.CalculatorListMenu.SuspendLayout();
@@ -208,9 +226,11 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.imageToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuImageSize,
+            this.MenuImageZoom,
             this.MenuImageColorSet,
             this.MenuImageColorOffset,
-            this.MenuImageExportAs});
+            this.MenuImageExportAs,
+            this.sequenceToolStripMenuItem});
 			this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
 			this.imageToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
 			this.imageToolStripMenuItem.Text = "Image";
@@ -246,7 +266,7 @@ namespace DistributedMandelbrotGraphics {
             this.toolStripMenuItem6,
             this.MenuImageSizeCustom});
 			this.MenuImageSize.Name = "MenuImageSize";
-			this.MenuImageSize.Size = new System.Drawing.Size(173, 22);
+			this.MenuImageSize.Size = new System.Drawing.Size(180, 22);
 			this.MenuImageSize.Text = "Size";
 			// 
 			// MenuImageSize800x600
@@ -430,6 +450,95 @@ namespace DistributedMandelbrotGraphics {
 			this.MenuImageSizeCustom.Text = "Custom...";
 			this.MenuImageSizeCustom.Click += new System.EventHandler(this.MenuImageSizeCustom_Click);
 			// 
+			// MenuImageZoom
+			// 
+			this.MenuImageZoom.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuImageZoomIn1,
+            this.MenuImageZoomIn10,
+            this.MenuImageZoomIn20,
+            this.MenuImageZoomIn50,
+            this.toolStripMenuItem12,
+            this.MenuImageZoomOut1,
+            this.MenuImageZoomOut10,
+            this.MenuImageZoomOut20,
+            this.MenuImageZoomOut50});
+			this.MenuImageZoom.Name = "MenuImageZoom";
+			this.MenuImageZoom.Size = new System.Drawing.Size(180, 22);
+			this.MenuImageZoom.Text = "Zoom";
+			// 
+			// MenuImageZoomIn1
+			// 
+			this.MenuImageZoomIn1.Name = "MenuImageZoomIn1";
+			this.MenuImageZoomIn1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
+			this.MenuImageZoomIn1.Size = new System.Drawing.Size(224, 22);
+			this.MenuImageZoomIn1.Text = "Zoom in 1%";
+			this.MenuImageZoomIn1.Click += new System.EventHandler(this.MenuImageZoomIn1_Click);
+			// 
+			// MenuImageZoomIn10
+			// 
+			this.MenuImageZoomIn10.Name = "MenuImageZoomIn10";
+			this.MenuImageZoomIn10.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D2)));
+			this.MenuImageZoomIn10.Size = new System.Drawing.Size(224, 22);
+			this.MenuImageZoomIn10.Text = "Zoom in 10%";
+			this.MenuImageZoomIn10.Click += new System.EventHandler(this.MenuImageZoomIn10_Click);
+			// 
+			// MenuImageZoomIn20
+			// 
+			this.MenuImageZoomIn20.Name = "MenuImageZoomIn20";
+			this.MenuImageZoomIn20.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
+			this.MenuImageZoomIn20.Size = new System.Drawing.Size(224, 22);
+			this.MenuImageZoomIn20.Text = "Zoom in 20%";
+			this.MenuImageZoomIn20.Click += new System.EventHandler(this.MenuImageZoomIn20_Click);
+			// 
+			// MenuImageZoomIn50
+			// 
+			this.MenuImageZoomIn50.Name = "MenuImageZoomIn50";
+			this.MenuImageZoomIn50.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D4)));
+			this.MenuImageZoomIn50.Size = new System.Drawing.Size(224, 22);
+			this.MenuImageZoomIn50.Text = "Zoom in 50%";
+			this.MenuImageZoomIn50.Click += new System.EventHandler(this.MenuImageZoomIn50_Click);
+			// 
+			// toolStripMenuItem12
+			// 
+			this.toolStripMenuItem12.Name = "toolStripMenuItem12";
+			this.toolStripMenuItem12.Size = new System.Drawing.Size(221, 6);
+			// 
+			// MenuImageZoomOut1
+			// 
+			this.MenuImageZoomOut1.Name = "MenuImageZoomOut1";
+			this.MenuImageZoomOut1.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.D1)));
+			this.MenuImageZoomOut1.Size = new System.Drawing.Size(224, 22);
+			this.MenuImageZoomOut1.Text = "Zoom out 1%";
+			this.MenuImageZoomOut1.Click += new System.EventHandler(this.MenuImageZoomOut1_Click);
+			// 
+			// MenuImageZoomOut10
+			// 
+			this.MenuImageZoomOut10.Name = "MenuImageZoomOut10";
+			this.MenuImageZoomOut10.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.D2)));
+			this.MenuImageZoomOut10.Size = new System.Drawing.Size(224, 22);
+			this.MenuImageZoomOut10.Text = "Zoom out 10%";
+			this.MenuImageZoomOut10.Click += new System.EventHandler(this.MenuImageZoomOut10_Click);
+			// 
+			// MenuImageZoomOut20
+			// 
+			this.MenuImageZoomOut20.Name = "MenuImageZoomOut20";
+			this.MenuImageZoomOut20.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.D3)));
+			this.MenuImageZoomOut20.Size = new System.Drawing.Size(224, 22);
+			this.MenuImageZoomOut20.Text = "Zoom out 20%";
+			this.MenuImageZoomOut20.Click += new System.EventHandler(this.MenuImageZoomOut20_Click);
+			// 
+			// MenuImageZoomOut50
+			// 
+			this.MenuImageZoomOut50.Name = "MenuImageZoomOut50";
+			this.MenuImageZoomOut50.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.D4)));
+			this.MenuImageZoomOut50.Size = new System.Drawing.Size(224, 22);
+			this.MenuImageZoomOut50.Text = "Zoom out 50%";
+			this.MenuImageZoomOut50.Click += new System.EventHandler(this.MenuImageZoomOut50_Click);
+			// 
 			// MenuImageColorSet
 			// 
 			this.MenuImageColorSet.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -437,7 +546,7 @@ namespace DistributedMandelbrotGraphics {
             this.MenuImageColorSetNext,
             this.toolStripMenuItem3});
 			this.MenuImageColorSet.Name = "MenuImageColorSet";
-			this.MenuImageColorSet.Size = new System.Drawing.Size(173, 22);
+			this.MenuImageColorSet.Size = new System.Drawing.Size(180, 22);
 			this.MenuImageColorSet.Text = "Color Set";
 			// 
 			// MenuImageColorSetPrevious
@@ -469,7 +578,7 @@ namespace DistributedMandelbrotGraphics {
             this.MenuImageColorOffsetDecrease1,
             this.MenuImageColorOffsetIncrease1});
 			this.MenuImageColorOffset.Name = "MenuImageColorOffset";
-			this.MenuImageColorOffset.Size = new System.Drawing.Size(173, 22);
+			this.MenuImageColorOffset.Size = new System.Drawing.Size(180, 22);
 			this.MenuImageColorOffset.Text = "Color Offset";
 			// 
 			// MenuImageColorOffsetDecrease10
@@ -510,9 +619,64 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.MenuImageExportAs.Name = "MenuImageExportAs";
 			this.MenuImageExportAs.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-			this.MenuImageExportAs.Size = new System.Drawing.Size(173, 22);
+			this.MenuImageExportAs.Size = new System.Drawing.Size(180, 22);
 			this.MenuImageExportAs.Text = "Export As...";
 			this.MenuImageExportAs.Click += new System.EventHandler(this.MenuImageExportAs_Click);
+			// 
+			// sequenceToolStripMenuItem
+			// 
+			this.sequenceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.zoomOut1ToolStripMenuItem,
+            this.toolStripMenuItem13,
+            this.MenuImageSequenceStep,
+            this.MenuImageSequenceRun});
+			this.sequenceToolStripMenuItem.Name = "sequenceToolStripMenuItem";
+			this.sequenceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sequenceToolStripMenuItem.Text = "Sequence";
+			// 
+			// zoomOut1ToolStripMenuItem
+			// 
+			this.zoomOut1ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuImageSequenceZoom1,
+            this.MenuImageSequenceZoom2,
+            this.MenuImageSequenceZoom3});
+			this.zoomOut1ToolStripMenuItem.Name = "zoomOut1ToolStripMenuItem";
+			this.zoomOut1ToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+			this.zoomOut1ToolStripMenuItem.Text = "Zoom rate";
+			// 
+			// MenuImageSequenceZoom1
+			// 
+			this.MenuImageSequenceZoom1.Name = "MenuImageSequenceZoom1";
+			this.MenuImageSequenceZoom1.Size = new System.Drawing.Size(146, 22);
+			this.MenuImageSequenceZoom1.Text = "Zoom out 1%";
+			this.MenuImageSequenceZoom1.Click += new System.EventHandler(this.MenuImageSequenceZoom1_Click);
+			// 
+			// MenuImageSequenceZoom2
+			// 
+			this.MenuImageSequenceZoom2.Name = "MenuImageSequenceZoom2";
+			this.MenuImageSequenceZoom2.Size = new System.Drawing.Size(146, 22);
+			this.MenuImageSequenceZoom2.Text = "Zoom out 2%";
+			this.MenuImageSequenceZoom2.Click += new System.EventHandler(this.MenuImageSequenceZoom2_Click);
+			// 
+			// MenuImageSequenceZoom3
+			// 
+			this.MenuImageSequenceZoom3.Name = "MenuImageSequenceZoom3";
+			this.MenuImageSequenceZoom3.Size = new System.Drawing.Size(146, 22);
+			this.MenuImageSequenceZoom3.Text = "Zoom out 3%";
+			this.MenuImageSequenceZoom3.Click += new System.EventHandler(this.MenuImageSequenceZoom3_Click);
+			// 
+			// toolStripMenuItem13
+			// 
+			this.toolStripMenuItem13.Name = "toolStripMenuItem13";
+			this.toolStripMenuItem13.Size = new System.Drawing.Size(182, 6);
+			// 
+			// MenuImageSequenceStep
+			// 
+			this.MenuImageSequenceStep.Name = "MenuImageSequenceStep";
+			this.MenuImageSequenceStep.ShortcutKeys = System.Windows.Forms.Keys.F2;
+			this.MenuImageSequenceStep.Size = new System.Drawing.Size(185, 22);
+			this.MenuImageSequenceStep.Text = "Export and Zoom";
+			this.MenuImageSequenceStep.Click += new System.EventHandler(this.MenuImageSequenceStep_Click);
 			// 
 			// calculationToolStripMenuItem
 			// 
@@ -545,7 +709,7 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.MenuCalculationPrecisionDecrease.Name = "MenuCalculationPrecisionDecrease";
 			this.MenuCalculationPrecisionDecrease.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Up)));
-			this.MenuCalculationPrecisionDecrease.Size = new System.Drawing.Size(180, 22);
+			this.MenuCalculationPrecisionDecrease.Size = new System.Drawing.Size(178, 22);
 			this.MenuCalculationPrecisionDecrease.Text = "Decrease";
 			this.MenuCalculationPrecisionDecrease.Click += new System.EventHandler(this.MenuCalculationPrecisionDecrease_Click);
 			// 
@@ -553,46 +717,46 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.MenuCalculationPrecisionIncrease.Name = "MenuCalculationPrecisionIncrease";
 			this.MenuCalculationPrecisionIncrease.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Down)));
-			this.MenuCalculationPrecisionIncrease.Size = new System.Drawing.Size(180, 22);
+			this.MenuCalculationPrecisionIncrease.Size = new System.Drawing.Size(178, 22);
 			this.MenuCalculationPrecisionIncrease.Text = "Increase";
 			this.MenuCalculationPrecisionIncrease.Click += new System.EventHandler(this.MenuCalculationPrecisionIncrease_Click);
 			// 
 			// toolStripMenuItem7
 			// 
 			this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-			this.toolStripMenuItem7.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem7.Size = new System.Drawing.Size(175, 6);
 			// 
 			// MenuCalculationPrecisionSingle
 			// 
 			this.MenuCalculationPrecisionSingle.Name = "MenuCalculationPrecisionSingle";
-			this.MenuCalculationPrecisionSingle.Size = new System.Drawing.Size(180, 22);
+			this.MenuCalculationPrecisionSingle.Size = new System.Drawing.Size(178, 22);
 			this.MenuCalculationPrecisionSingle.Text = "Single";
 			this.MenuCalculationPrecisionSingle.Click += new System.EventHandler(this.MenuCalculationPrecisionSingle_Click);
 			// 
 			// MenuCalculationPrecisionDouble
 			// 
 			this.MenuCalculationPrecisionDouble.Name = "MenuCalculationPrecisionDouble";
-			this.MenuCalculationPrecisionDouble.Size = new System.Drawing.Size(180, 22);
+			this.MenuCalculationPrecisionDouble.Size = new System.Drawing.Size(178, 22);
 			this.MenuCalculationPrecisionDouble.Text = "Double";
 			this.MenuCalculationPrecisionDouble.Click += new System.EventHandler(this.MenuCalculationPrecisionDouble_Click);
 			// 
 			// MenuCalculationPrecisionFixedPoint
 			// 
 			this.MenuCalculationPrecisionFixedPoint.Name = "MenuCalculationPrecisionFixedPoint";
-			this.MenuCalculationPrecisionFixedPoint.Size = new System.Drawing.Size(180, 22);
+			this.MenuCalculationPrecisionFixedPoint.Size = new System.Drawing.Size(178, 22);
 			this.MenuCalculationPrecisionFixedPoint.Text = "FixedPoint";
 			this.MenuCalculationPrecisionFixedPoint.Click += new System.EventHandler(this.MenuCalculationPrecisionFixedPoint128_Click);
 			// 
 			// toolStripMenuItem8
 			// 
 			this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-			this.toolStripMenuItem8.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem8.Size = new System.Drawing.Size(175, 6);
 			// 
 			// MenuCalculationPrecisionAuto
 			// 
 			this.MenuCalculationPrecisionAuto.Name = "MenuCalculationPrecisionAuto";
 			this.MenuCalculationPrecisionAuto.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-			this.MenuCalculationPrecisionAuto.Size = new System.Drawing.Size(180, 22);
+			this.MenuCalculationPrecisionAuto.Size = new System.Drawing.Size(178, 22);
 			this.MenuCalculationPrecisionAuto.Text = "Auto";
 			this.MenuCalculationPrecisionAuto.Click += new System.EventHandler(this.MenuCalculationPrecisionAuto_Click);
 			// 
@@ -610,7 +774,7 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.MenuCalculationIterationsDecrease.Name = "MenuCalculationIterationsDecrease";
 			this.MenuCalculationIterationsDecrease.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Left)));
-			this.MenuCalculationIterationsDecrease.Size = new System.Drawing.Size(180, 22);
+			this.MenuCalculationIterationsDecrease.Size = new System.Drawing.Size(175, 22);
 			this.MenuCalculationIterationsDecrease.Text = "Decrease";
 			this.MenuCalculationIterationsDecrease.Click += new System.EventHandler(this.MenuCalculationIterationsDecrease_Click);
 			// 
@@ -618,14 +782,14 @@ namespace DistributedMandelbrotGraphics {
 			// 
 			this.MenuCalculationIterationsIncrease.Name = "MenuCalculationIterationsIncrease";
 			this.MenuCalculationIterationsIncrease.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Right)));
-			this.MenuCalculationIterationsIncrease.Size = new System.Drawing.Size(180, 22);
+			this.MenuCalculationIterationsIncrease.Size = new System.Drawing.Size(175, 22);
 			this.MenuCalculationIterationsIncrease.Text = "Increase";
 			this.MenuCalculationIterationsIncrease.Click += new System.EventHandler(this.MenuCalculationIterationsIncrease_Click);
 			// 
 			// toolStripMenuItem9
 			// 
 			this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-			this.toolStripMenuItem9.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem9.Size = new System.Drawing.Size(172, 6);
 			// 
 			// MenuCalculationSmoothing
 			// 
@@ -1028,6 +1192,14 @@ namespace DistributedMandelbrotGraphics {
 			this.panel1.Size = new System.Drawing.Size(1116, 682);
 			this.panel1.TabIndex = 4;
 			// 
+			// MenuImageSequenceRun
+			// 
+			this.MenuImageSequenceRun.Name = "MenuImageSequenceRun";
+			this.MenuImageSequenceRun.ShortcutKeys = System.Windows.Forms.Keys.F3;
+			this.MenuImageSequenceRun.Size = new System.Drawing.Size(185, 22);
+			this.MenuImageSequenceRun.Text = "Start/Stop Export";
+			this.MenuImageSequenceRun.Click += new System.EventHandler(this.MenuImageSequenceRun_Click);
+			// 
 			// DMG
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1165,6 +1337,24 @@ namespace DistributedMandelbrotGraphics {
 		public System.Windows.Forms.PictureBox ImageBox;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.ToolStripMenuItem MenuCalculationPrecisionFixedPoint;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageZoom;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageZoomIn1;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageZoomIn10;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageZoomIn20;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageZoomIn50;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageZoomOut1;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageZoomOut10;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageZoomOut20;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageZoomOut50;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem12;
+		private System.Windows.Forms.ToolStripMenuItem sequenceToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem zoomOut1ToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceZoom1;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceZoom2;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceZoom3;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem13;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceStep;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceRun;
 	}
 }
 
