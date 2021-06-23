@@ -152,7 +152,6 @@ namespace DistributedMandelbrotGraphics {
 			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.ImageBox = new System.Windows.Forms.PictureBox();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.zoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu.SuspendLayout();
 			this.Status.SuspendLayout();
 			this.CalculatorListMenu.SuspendLayout();
@@ -231,8 +230,7 @@ namespace DistributedMandelbrotGraphics {
             this.MenuImageColorSet,
             this.MenuImageColorOffset,
             this.MenuImageExportAs,
-            this.sequenceToolStripMenuItem,
-            this.zoomToolStripMenuItem});
+            this.sequenceToolStripMenuItem});
 			this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
 			this.imageToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
 			this.imageToolStripMenuItem.Text = "Image";
@@ -1202,12 +1200,6 @@ namespace DistributedMandelbrotGraphics {
 			this.panel1.Size = new System.Drawing.Size(1116, 682);
 			this.panel1.TabIndex = 4;
 			// 
-			// zoomToolStripMenuItem
-			// 
-			this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-			this.zoomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.zoomToolStripMenuItem.Text = "Zoom";
-			// 
 			// DMG
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1363,7 +1355,6 @@ namespace DistributedMandelbrotGraphics {
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem13;
 		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceStep;
 		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceRun;
-		private System.Windows.Forms.ToolStripMenuItem zoomToolStripMenuItem;
 	}
 }
 
