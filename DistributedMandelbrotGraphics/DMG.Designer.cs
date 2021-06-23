@@ -89,6 +89,7 @@ namespace DistributedMandelbrotGraphics {
 			this.MenuImageSequenceZoom3 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
 			this.MenuImageSequenceStep = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageSequenceRun = new System.Windows.Forms.ToolStripMenuItem();
 			this.calculationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuCalculationPrecision = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuCalculationPrecisionDecrease = new System.Windows.Forms.ToolStripMenuItem();
@@ -151,7 +152,7 @@ namespace DistributedMandelbrotGraphics {
 			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.ImageBox = new System.Windows.Forms.PictureBox();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.MenuImageSequenceRun = new System.Windows.Forms.ToolStripMenuItem();
+			this.zoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu.SuspendLayout();
 			this.Status.SuspendLayout();
 			this.CalculatorListMenu.SuspendLayout();
@@ -230,7 +231,8 @@ namespace DistributedMandelbrotGraphics {
             this.MenuImageColorSet,
             this.MenuImageColorOffset,
             this.MenuImageExportAs,
-            this.sequenceToolStripMenuItem});
+            this.sequenceToolStripMenuItem,
+            this.zoomToolStripMenuItem});
 			this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
 			this.imageToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
 			this.imageToolStripMenuItem.Text = "Image";
@@ -677,6 +679,14 @@ namespace DistributedMandelbrotGraphics {
 			this.MenuImageSequenceStep.Size = new System.Drawing.Size(185, 22);
 			this.MenuImageSequenceStep.Text = "Export and Zoom";
 			this.MenuImageSequenceStep.Click += new System.EventHandler(this.MenuImageSequenceStep_Click);
+			// 
+			// MenuImageSequenceRun
+			// 
+			this.MenuImageSequenceRun.Name = "MenuImageSequenceRun";
+			this.MenuImageSequenceRun.ShortcutKeys = System.Windows.Forms.Keys.F3;
+			this.MenuImageSequenceRun.Size = new System.Drawing.Size(185, 22);
+			this.MenuImageSequenceRun.Text = "Start/Stop Export";
+			this.MenuImageSequenceRun.Click += new System.EventHandler(this.MenuImageSequenceRun_Click);
 			// 
 			// calculationToolStripMenuItem
 			// 
@@ -1192,13 +1202,11 @@ namespace DistributedMandelbrotGraphics {
 			this.panel1.Size = new System.Drawing.Size(1116, 682);
 			this.panel1.TabIndex = 4;
 			// 
-			// MenuImageSequenceRun
+			// zoomToolStripMenuItem
 			// 
-			this.MenuImageSequenceRun.Name = "MenuImageSequenceRun";
-			this.MenuImageSequenceRun.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.MenuImageSequenceRun.Size = new System.Drawing.Size(185, 22);
-			this.MenuImageSequenceRun.Text = "Start/Stop Export";
-			this.MenuImageSequenceRun.Click += new System.EventHandler(this.MenuImageSequenceRun_Click);
+			this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
+			this.zoomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.zoomToolStripMenuItem.Text = "Zoom";
 			// 
 			// DMG
 			// 
@@ -1355,6 +1363,7 @@ namespace DistributedMandelbrotGraphics {
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem13;
 		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceStep;
 		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceRun;
+		private System.Windows.Forms.ToolStripMenuItem zoomToolStripMenuItem;
 	}
 }
 
