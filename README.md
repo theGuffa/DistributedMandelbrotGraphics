@@ -13,9 +13,10 @@ Fetaures:
 - Two different smoothing modes.
 - Save image settings in a JSON format.
 - Image export to JPEG/PNG/TIFF/BMP.
+- Image sequence export.
 
 Current version:
-- v0.9
+- v0.9.3
 
 Requirement:
 - .NET 5.0
@@ -32,5 +33,4 @@ Quick start:
 - Use Ctrl+N to restart with the entire set.
 
 Planned for the future:
-- DoubleDouble precision.
 - Nvidia CUDA calculations.
