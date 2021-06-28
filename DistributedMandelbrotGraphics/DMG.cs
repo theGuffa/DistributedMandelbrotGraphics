@@ -77,12 +77,20 @@ namespace DistributedMandelbrotGraphics {
 			SetShowWorkers(_settings.ShowWorkers, false);
 		}
 
+		// Callback from the image manager when all results has been put into the image
 		private void OnComplete() {
+			// Run next step if automatic sequence is running and the zoom hasn't reached the limit
 			if (_sequenceRepeat) {
-				if (InvokeRequired) {
-					Invoke(new Action(ExportAndZoom));
+				if (_imageManager.Scale * _imageManager.W < 60.0m) {
+					if (InvokeRequired) {
+						// Invoke the method in the main thread if we are in a different thread
+						Invoke(new Action(ExportAndZoom));
+					} else {
+						ExportAndZoom();
+					}
 				} else {
-					ExportAndZoom();
+					_sequenceRepeat = false;
+					SetImageSequenceMenu();
 				}
 			}
 		}
@@ -257,6 +265,18 @@ namespace DistributedMandelbrotGraphics {
 			StatusLabelCoordinates.Text = FormattableString.Invariant($"Coor: {_imageManager.Left} ; {_imageManager.Top} : {_imageManager.Scale}");
 		}
 
+		private void SetSequenceInfo() {
+			string zoom;
+			switch (_sequenceZoom) {
+				case 1.0025m: zoom = "0.25"; break;
+				case 1.005m: zoom = "0.5"; break;
+				case 1.01m: zoom = "1"; break;
+				case 1.02m: zoom = "2"; break;
+				default: zoom = "3"; break;
+			}
+			StatusLabelSequence.Text = $"Sequence: {zoom}% {(_sequenceRepeat ? " On" : " Off")}";
+		}
+
 		#endregion
 
 		// Methods for setting status of menu controls
@@ -314,15 +334,19 @@ namespace DistributedMandelbrotGraphics {
 		}
 
 		private void SetImageSequenceZoomMenu() {
+			MenuImageSequenceZoom025.Checked = _sequenceZoom == 1.0025m;
+			MenuImageSequenceZoom05.Checked = _sequenceZoom == 1.005m;
 			MenuImageSequenceZoom1.Checked = _sequenceZoom == 1.01m;
 			MenuImageSequenceZoom2.Checked = _sequenceZoom == 1.02m;
 			MenuImageSequenceZoom3.Checked = _sequenceZoom == 1.03m;
+			SetSequenceInfo();
 		}
 
 		private void SetImageSequenceMenu() {
 			MenuImageSequenceStep.Enabled = _fileName != null;
 			MenuImageSequenceRun.Enabled = _fileName != null;
 			MenuImageSequenceRun.Checked = _sequenceRepeat;
+			SetSequenceInfo();
 		}
 
 		private void SetPrecisionChangeMenu() {
@@ -568,8 +592,9 @@ namespace DistributedMandelbrotGraphics {
 
 		#endregion
 
-		// Event handlers for window menu
-		#region Menu
+		// Event handlers for window menus
+
+		#region File menu
 
 		private void MenuFileNew_Click(object sender, EventArgs e) {
 			// Stop calculations and start over
@@ -613,6 +638,10 @@ namespace DistributedMandelbrotGraphics {
 			DeactivateBatch();
 			Close();
 		}
+
+		#endregion
+
+		#region Image menu
 
 		private void MenuImageExportAs_Click(object sender, EventArgs e) {
 			ExportImageDialog.Title = "Export image";
@@ -701,6 +730,16 @@ namespace DistributedMandelbrotGraphics {
 		private void MenuImageZoomOut20_Click(object sender, EventArgs e) => ImageMenuZoomCenter(false, 1.2m);
 		private void MenuImageZoomOut50_Click(object sender, EventArgs e) => ImageMenuZoomCenter(false, 1.5m);
 
+		private void MenuImageSequenceZoom025_Click(object sender, EventArgs e) {
+			_sequenceZoom = 1.0025m;
+			SetImageSequenceZoomMenu();
+		}
+
+		private void MenuImageSequenceZoom05_Click(object sender, EventArgs e) {
+			_sequenceZoom = 1.005m;
+			SetImageSequenceZoomMenu();
+		}
+
 		private void MenuImageSequenceZoom1_Click(object sender, EventArgs e) {
 			_sequenceZoom = 1.01m;
 			SetImageSequenceZoomMenu();
@@ -742,6 +781,10 @@ namespace DistributedMandelbrotGraphics {
 		private void MenuImageColorOffsetIncrease10_Click(object sender, EventArgs e) => SetColorOffset(_imageManager.ColorOffset + 10);
 		private void MenuImageColorOffsetDecrease1_Click(object sender, EventArgs e) => SetColorOffset(_imageManager.ColorOffset - 1);
 		private void MenuImageColorOffsetIncrease1_Click(object sender, EventArgs e) => SetColorOffset(_imageManager.ColorOffset + 1);
+
+		#endregion
+
+		#region Calculation menu
 
 		private void MenuCalculationPrecisionDecrease_Click(object sender, EventArgs e) {
 			switch (_imageManager.Precision) {
@@ -789,6 +832,10 @@ namespace DistributedMandelbrotGraphics {
 		private void MenuCalculationShowWorkers_Click(object sender, EventArgs e) {
 			SetShowWorkers(!MenuCalculationShowWorkers.Checked, true);
 		}
+
+		#endregion
+
+		#region Help menu
 
 		private void MenuHelpAbout_Click(object sender, EventArgs e) {
 			new About().ShowDialog();

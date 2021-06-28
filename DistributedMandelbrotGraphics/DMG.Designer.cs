@@ -84,6 +84,8 @@ namespace DistributedMandelbrotGraphics {
 			this.MenuImageExportAs = new System.Windows.Forms.ToolStripMenuItem();
 			this.sequenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.zoomOut1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageSequenceZoom025 = new System.Windows.Forms.ToolStripMenuItem();
+			this.MenuImageSequenceZoom05 = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuImageSequenceZoom1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuImageSequenceZoom2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuImageSequenceZoom3 = new System.Windows.Forms.ToolStripMenuItem();
@@ -152,6 +154,7 @@ namespace DistributedMandelbrotGraphics {
 			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.ImageBox = new System.Windows.Forms.PictureBox();
 			this.panel1 = new System.Windows.Forms.Panel();
+			this.StatusLabelSequence = new System.Windows.Forms.ToolStripStatusLabel();
 			this.Menu.SuspendLayout();
 			this.Status.SuspendLayout();
 			this.CalculatorListMenu.SuspendLayout();
@@ -637,6 +640,8 @@ namespace DistributedMandelbrotGraphics {
 			// zoomOut1ToolStripMenuItem
 			// 
 			this.zoomOut1ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuImageSequenceZoom025,
+            this.MenuImageSequenceZoom05,
             this.MenuImageSequenceZoom1,
             this.MenuImageSequenceZoom2,
             this.MenuImageSequenceZoom3});
@@ -644,24 +649,38 @@ namespace DistributedMandelbrotGraphics {
 			this.zoomOut1ToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
 			this.zoomOut1ToolStripMenuItem.Text = "Zoom rate";
 			// 
+			// MenuImageSequenceZoom025
+			// 
+			this.MenuImageSequenceZoom025.Name = "MenuImageSequenceZoom025";
+			this.MenuImageSequenceZoom025.Size = new System.Drawing.Size(161, 22);
+			this.MenuImageSequenceZoom025.Text = "Zoom out 0.25%";
+			this.MenuImageSequenceZoom025.Click += new System.EventHandler(this.MenuImageSequenceZoom025_Click);
+			// 
+			// MenuImageSequenceZoom05
+			// 
+			this.MenuImageSequenceZoom05.Name = "MenuImageSequenceZoom05";
+			this.MenuImageSequenceZoom05.Size = new System.Drawing.Size(161, 22);
+			this.MenuImageSequenceZoom05.Text = "Zoom out 0.5%";
+			this.MenuImageSequenceZoom05.Click += new System.EventHandler(this.MenuImageSequenceZoom05_Click);
+			// 
 			// MenuImageSequenceZoom1
 			// 
 			this.MenuImageSequenceZoom1.Name = "MenuImageSequenceZoom1";
-			this.MenuImageSequenceZoom1.Size = new System.Drawing.Size(146, 22);
+			this.MenuImageSequenceZoom1.Size = new System.Drawing.Size(161, 22);
 			this.MenuImageSequenceZoom1.Text = "Zoom out 1%";
 			this.MenuImageSequenceZoom1.Click += new System.EventHandler(this.MenuImageSequenceZoom1_Click);
 			// 
 			// MenuImageSequenceZoom2
 			// 
 			this.MenuImageSequenceZoom2.Name = "MenuImageSequenceZoom2";
-			this.MenuImageSequenceZoom2.Size = new System.Drawing.Size(146, 22);
+			this.MenuImageSequenceZoom2.Size = new System.Drawing.Size(161, 22);
 			this.MenuImageSequenceZoom2.Text = "Zoom out 2%";
 			this.MenuImageSequenceZoom2.Click += new System.EventHandler(this.MenuImageSequenceZoom2_Click);
 			// 
 			// MenuImageSequenceZoom3
 			// 
 			this.MenuImageSequenceZoom3.Name = "MenuImageSequenceZoom3";
-			this.MenuImageSequenceZoom3.Size = new System.Drawing.Size(146, 22);
+			this.MenuImageSequenceZoom3.Size = new System.Drawing.Size(161, 22);
 			this.MenuImageSequenceZoom3.Text = "Zoom out 3%";
 			this.MenuImageSequenceZoom3.Click += new System.EventHandler(this.MenuImageSequenceZoom3_Click);
 			// 
@@ -911,7 +930,8 @@ namespace DistributedMandelbrotGraphics {
             this.StatusLabelColors,
             this.StatusLabelPrecision,
             this.StatusLabelSmoothing,
-            this.StatusLabelCoordinates});
+            this.StatusLabelCoordinates,
+            this.StatusLabelSequence});
 			this.Status.Location = new System.Drawing.Point(0, 706);
 			this.Status.Name = "Status";
 			this.Status.Size = new System.Drawing.Size(1376, 24);
@@ -1200,6 +1220,15 @@ namespace DistributedMandelbrotGraphics {
 			this.panel1.Size = new System.Drawing.Size(1116, 682);
 			this.panel1.TabIndex = 4;
 			// 
+			// StatusLabelSequence
+			// 
+			this.StatusLabelSequence.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+			this.StatusLabelSequence.Name = "StatusLabelSequence";
+			this.StatusLabelSequence.Size = new System.Drawing.Size(62, 19);
+			this.StatusLabelSequence.Text = "Sequence";
+			// 
 			// DMG
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1355,6 +1384,9 @@ namespace DistributedMandelbrotGraphics {
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem13;
 		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceStep;
 		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceRun;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceZoom025;
+		private System.Windows.Forms.ToolStripMenuItem MenuImageSequenceZoom05;
+		private System.Windows.Forms.ToolStripStatusLabel StatusLabelSequence;
 	}
 }
 
