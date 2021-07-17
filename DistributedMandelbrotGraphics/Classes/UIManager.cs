@@ -118,6 +118,17 @@ namespace DistributedMandelbrotGraphics.Classes {
 			}
 		}
 
+		// Set node change for all nodes
+		public void SetAllNodeChanged() {
+			lock (_sync) {
+				foreach (var key in _updateNode.Keys) {
+					if (_updateNode[key] != NodeChange.Remove) {
+						_updateNode[key] = NodeChange.Update;
+					}
+				}
+			}
+		}
+
 		// Flag progress bar to be updated
 		public void SetProgress(int value) {
 			_progress = value;

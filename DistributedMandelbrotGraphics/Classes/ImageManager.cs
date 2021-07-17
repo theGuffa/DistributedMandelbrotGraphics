@@ -630,9 +630,18 @@ namespace DistributedMandelbrotGraphics.Classes {
 
 		// Determine if the data for a task contains a specific value
 		public bool TaskContainsValue(CalcTask task, int value) {
-			for (int y = 0; y < task.H; y++) {
-				for (int x = 0; x < task.W; x++) {
-					if (_data[task.X + x, task.Y + y] == value) {
+			int x = task.X, y = task.Y, w = task.W, h = task.H;
+			if (task.Smoothing != SmoothingMode.None) {
+				x *= 2;
+				w *= 2;
+			}
+			if (task.Smoothing == SmoothingMode.Quadruple) {
+				y *= 2;
+				h *= 2;
+			}
+			for (int dy = 0; dy < h; dy++) {
+				for (int dx = 0; dx < w; dx++) {
+					if (_data[x + dx, y + dy] == value) {
 						return true;
 					}
 				}

@@ -3,6 +3,7 @@ using MandelCalculation;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -254,7 +255,7 @@ namespace DistributedMandelbrotGraphics {
 		}
 
 		private void SetPrecisionInfo() {
-			StatusLabelPrecision.Text = $"{(_imageManager.AutoPrecision ? "Auto: " : String.Empty)}{_imageManager.Precision}, {_imageManager.Iterations} iterations";
+			StatusLabelPrecision.Text = $"{(_imageManager.AutoPrecision ? "Auto: " : String.Empty)}{_imageManager.Precision}; {_imageManager.Iterations.ToString("N0", CultureInfo.InvariantCulture)} iterations";
 		}
 
 		private void SetSmoothingInfo() {
@@ -418,6 +419,9 @@ namespace DistributedMandelbrotGraphics {
 			MenuCalculationShowWorkers.Checked = show;
 			CalculatorList.Visible = MenuCalculationShowWorkers.Checked;
 			_uiManager.WorkersVisible = show;
+			if (show) {
+				_uiManager.SetAllNodeChanged();
+			}
 			if (saveSettings) {
 				_settings.ShowWorkers = show;
 				_settings.Save();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,10 @@ namespace DistributedMandelbrotGraphics.Classes {
 				new IterationsInfo(10000),
 				new IterationsInfo(20000),
 				new IterationsInfo(40000),
+				new IterationsInfo(80000),
+				new IterationsInfo(100000),
+				new IterationsInfo(200000),
+				new IterationsInfo(400000),
 				new IterationsInfo(800000),
 				new IterationsInfo(1000000)
 			};
@@ -47,11 +52,11 @@ namespace DistributedMandelbrotGraphics.Classes {
 		public static int MaxValue => _info[_info.Length - 1].Iterations;
 
 		// Create menu items and store the references in the iteration info items
-		public static void CreateMenuItems(ToolStripMenuItem menu, Action<int> SetDepth) {
+		public static void CreateMenuItems(ToolStripMenuItem menu, Action<int> SetIterations) {
 			foreach (var info in _info) {
-				info.MenuItem = new ToolStripMenuItem(info.Iterations.ToString());
+				info.MenuItem = new ToolStripMenuItem(info.Iterations.ToString("N0", CultureInfo.InvariantCulture));
 				menu.DropDownItems.Add(info.MenuItem);
-				info.MenuItem.Click += (object sender, EventArgs e) => { SetDepth(info.Iterations); };
+				info.MenuItem.Click += (object sender, EventArgs e) => { SetIterations(info.Iterations); };
 			}
 		}
 

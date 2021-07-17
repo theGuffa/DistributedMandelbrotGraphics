@@ -24,7 +24,7 @@ namespace DistributedMandelbrotGraphics.Classes {
 		public const int PanInactivityMs = 300;
 
 		// Maximum size of squares created when panning
-		public const int MaxTaskSquareSize = 500;
+		public const int MaxTaskSquareSize = 200;
 
 		// Active flag for the internal worker
 		[UserScopedSetting]
