@@ -4,7 +4,7 @@ A Windows desktop application that lets you explore mandelbrot graphics, and let
 Fetaures:
 - Mouse and keyboard shortcuts to quickly explore the mandelbrot set.
 - Responsive interface that lets you zoom, pan and choose colors while the image is calculated.
-- Ability to use a worker application running on other computers in the network.
+- Ability to use a worker application running on other computers in a network.
 - A set of common screen and image sizes to use for the target image.
 - Many color sets to choose from.
 - A color offset to adjust how color sets are used.
@@ -16,7 +16,7 @@ Fetaures:
 - Image sequence export.
 
 Current version:
-- v0.9.3
+- v0.9.4
 
 Requirement:
 - .NET 5.0
