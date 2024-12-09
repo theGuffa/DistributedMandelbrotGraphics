@@ -1,0 +1,65 @@
+<html>
+<head>
+<title></title>
+<style>
+body { margin: 0; padding: 10px; background: #111; color: #ccc; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14px; }
+a { color: #99f; text-decoration: none; }
+.info { padding: 20px 20px 30px; }
+.images { display: flex; flex-flow: wrap; gap: 10px; }
+.images .image { border: 1px solid #333; border-radius: 5px; background: #000; padding: 10px; display: grid; grid-template-columns: 100px 150px 120px; gap: 10px; }
+.images .image img { width: 150px; }
+.images .links a {}
+.images .links a { display: block; }
+</style>
+</head>
+<body>
+	<div class="info">
+		Here are the example images created in the Distributed Mandelbrot Graphics program. Each image is available in four different resolutions. Each link takes you to the github page for it, where you can view and download it.
+	</div>
+	<div class="images">
+
+<script>
+
+var base = 'https://raw.githubusercontent.com/theGuffa/DistributedMandelbrotGraphics/refs/heads/main/Examples/';
+var dl = 'https://github.com/theGuffa/DistributedMandelbrotGraphics/blob/main/Examples/';
+
+function enc(name) {
+	return encodeURIComponent(name.replace(/ /g, '-'));
+}
+
+function image(name) {
+	return '<div class="image">' +
+		'<div class="name">' + name + '</div>' +
+		'<img src="' + base + 'Thumbnails/' + enc(name) + '.jpg">' +
+		'<div class="links">' +
+			'<a href="' + dl + '1080p/' + enc(name) + '.jpg" target="_blank">1920x1080 FHD</a>' +
+			'<a href="' + dl + '1440p/' + enc(name) + '.jpg" target="_blank">2560x1440 QHD</a>' +
+			'<a href="' + dl + '4k/' + enc(name) + '.jpg" target="_blank">3840x2160 4k</a>' +
+			'<a href="' + dl + '8k/' + enc(name) + '.jpg" target="_blank">7680x4320 8k</a>' +
+		'</div>' +
+	'</div>';
+}
+
+var images = [
+
+'Alien','Alone','Antlers','Armour','Baby elephants','Bones','Boots','Border','Bowl','Bread','Bright','Burnout','Candy','Captain','Carbon','Caribou',
+'Carved','Chain','Chainsaw','Chase','Chicken','China','Chocolate','Circles','Circus','Claws','Clear','Clematis','Cloud','Coal','Conversation','Cold',
+'Cotton','Coup','Creamy','Crust','Crystal','Curry','Darkpink','Deep','Display','Djungle','Dragon','Drill','Dual','Duality','Ducky','Eclipse','Elephant',
+'Energetic','Family','Fifi','Fire breathing','Fishy','Flames','Flex','Follows','Fortified','Frosted','Fruity','Gears','Goggie','Guard','Guru','Hatch',
+'Haunted','Heart','Hippo','Hub','Hydra','Icy','Inlet','Innocent','Island','Jumpy','Legs','Lights','Machine','Machinery','Marble','Mecha','Melt','Mirelurk',
+'Moat','Naval','Netting','Octo','Octopink','Octostar','Open','Organic','Oriental','Outlook','Owls','Panther','Parchment','Party','Petals','Pillar','Pillow',
+'Poke','Props','Protected','Quilt','Ramps','Reflective','Reinforced','Relief','Remote','Reversed','Reyka','Ritual','Rounded','Runes','Sacrifice','Sails',
+'Sand','Satellites','Scales','Segments','Separated','Serpent','Shells','Shine','Siamese','Skinny','Smokey','Sparkles','Spinal','Spines','Spiraling',
+'Springs','Squiggle','Squiggly','Steel','Storm','Stranded','Swarm','The wall','Threads','Traction','Twigs','Twist','Underwater','Veins','Vine','Void',
+'Wallpaper','Whipped','Winter'
+
+];
+
+for (var i = 0; i < images.length; i++) {
+	document.write(image(images[i]));
+}
+
+</script>
+	</div>
+</body>
+</html>
