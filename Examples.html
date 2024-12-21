@@ -4,7 +4,8 @@
 <style>
 body { margin: 0; padding: 10px; background: #111; color: #b0b0b0; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 13px; }
 a { color: #77c; text-decoration: none; }
-a:hover { color: #88d; }
+a:visited { color: #55a; }
+a:hover { color: #99e; }
 .info { padding: 20px 20px 30px; }
 .images { display: flex; flex-flow: wrap; gap: 10px; }
 .images .image { border: 1px solid #333; border-radius: 6px; background: #000; padding: 10px; display: grid; grid-template-columns: 150px 120px; column-gap: 10px; }
@@ -15,25 +16,26 @@ a:hover { color: #88d; }
 <script>
 
 var images = [
-	'Against','Alien','Alone','Antennas','Antlers','Armour','Around','Baby elephants','Bones','Boots','Border','Bowl','Bread','Bright','Burnout','Candy','Captain',
-	'Carbon','Caribou','Carved','Cerebral','Chain','Chainsaw','Chase','Chess','Chicken','China','Chocolate','Chubby','Circles','Circus','Claws','Clear','Clematis',
-	'Cloro','Cloud','Coal','Cold flames','Conversation','Cold','Cotton','Coup','Covers','Creamy','Crossing','Crust','Crystal','Curly','Curry','Darkpink','Deep',
-	'Display','Divided','Djungle','Double','Dragon','Drill','Drive','Dual','Duality','Ducky','Eagle','Eclipse','Effect','Elephant','Energetic','Family','Fan','Fifi',
-	'Fire breathing','Fireweed','Fishy','Flames','Flex','Follows','Fortified','Frosted','Fruity','Fur','Gears','Glass','Goggie','Guard','Guru','Hatch','Haunted',
-	'Heart','Hippo','Hub','Hydra','Icy','Inlet','Inner yard','Innocent','Island','Jointed','Jumpy','Lake','Leather','Legs','Lights','Lit','Luxury','Machine','Machinery',
-	'Marble','Mecha','Mechanical','Medal','Melt','Mirelurk','Moat','Muscle','Naval','Netting','Observed','Octo','Octopink','Octostar','Open','Organic','Oriental',
-	'Ornate','Outlook','Owls','Panels','Panther','Parchment','Party','Patterned','Petals','Pillar','Pillow','Poke','Power','Props','Protected','Queue','Quilt','Ramps',
-	'Raw','Reflective','Reinforced','Relief','Remote','Reversed','Reyka','Ride','Ridge','Ritual','Rounded','Royal','Runes','Sacrifice','Sails','Sand','Satellites',
-	'Sawblade','Scales','Scaly','Secret','Segments','Separated','Serpent','Shadows','Shelley','Shells','Shields','Shine','Shiny','Siamese','Sides','Skinny','Slice',
-	'Slide','Smokey','Solid','Sparkles','Spinal','Spines','Spiraling','Springs','Squiggle','Squiggly','Starbirth','Steamy','Steel','Stella','Storm','Stranded','Swarm',
-	'Symbiosis','Tasty','The wall','Threads','Traction','Trail','Transparent','Twigs','Twist','Underwater','Veins','Vine','Void','Wallpaper','Weld','Whipped','Winter'
+	'Against','Alien','Alone','Antennas','Antlers','Armour','Around','Baby elephants','Bite','Bones','Boots','Border','Bowl','Bread','Bright','Burnout','Candy',
+	'Captain','Carbon','Caribou','Carved','Cerebral','Chain','Chainsaw','Chase','Chess','Chicken','China','Chocolate','Chubby','Circles','Circus','Clawing',
+	'Claws','Clear','Clematis','Cloro','Cloud','Coal','Cold flames','Conversation','Cold','Cotton','Coup','Covers','Creamy','Crossing','Crust','Crystal','Curly',
+	'Curry','Darkpink','Deep','Display','Divided','Djungle','Double','Dragon','Drill','Drive','Dual','Duality','Ducky','Eagle','Eclipse','Effect','Elephant','Energetic',
+	'Family','Fan','Fifi','Fire breathing','Fireweed','Fishy','Flames','Flex','Follows','Fortified','Frosted','Fruity','Fur','Gears','Glass','Goggie','Guard','Guru',
+	'Hatch','Haunted','Heart','Hippo','Hot steel','Hub','Hydra','Icy','Inlet','Inner yard','Innocent','Internal','Island','Jointed','Jumpy','Lake','Leather','Legs',
+	'Lights','Lit','Luxury','Machine','Machinery','Marble','Mecha','Mechanical','Medal','Melt','Mirelurk','Moat','Muscle','Naval','Netting','Observed','Octo',
+	'Octopink','Octostar','Open','Organic','Oriental','Ornate','Outlook','Owls','Panels','Panther','Parchment','Party','Patterned','Petals','Pillar','Pillow','Poke',
+	'Power','Props','Protected','Queue','Quilt','Ramps','Raw','Reflective','Reinforced','Relief','Remote','Reversed','Reyka','Ride','Ridge','Ritual','Rounded',
+	'Royal','Runes','Sacrifice','Sails','Sand','Satellites','Sawblade','Scales','Scaly','Secret','Segments','Separated','Serpent','Shadows','Shelley','Shells',
+	'Shields','Shine','Shiny','Siamese','Sides','Skinny','Slice','Slide','Smokey','Solid','Sparkles','Spinal','Spines','Spiraling','Springs','Squiggle','Squiggly',
+	'Starbirth','Steamy','Steel','Stella','Storm','Stranded','Swarm','Symbiosis','Tasty','The wall','Threads','Traction','Trail','Transparent','Twigs','Twist',
+	'Underwater','Veins','Vine','Void','Wallpaper','Weld','Whipped','Winter'
 ];
 
 </script>
 </head>
 <body>
 	<div class="info">
-		Here are the <script> document.write(images.length); </script> example images created in the <a href="https://github.com/theGuffa/DistributedMandelbrotGraphics">Distributed Mandelbrot Graphics</a> program. Each image is available in four different resolutions. Each link takes you to the github page for it, where you can view and download it.
+		Here are the <script> document.write(images.length); </script> example images created in the <a href="https://github.com/theGuffa/DistributedMandelbrotGraphics">Distributed Mandelbrot Graphics</a> program. Each image is available in four different resolutions. Each link takes you to the github page for it, where you can view and download it. All the .mj files for the examples are in the <a href="https://github.com/theGuffa/DistributedMandelbrotGraphics/tree/main/Examples" target="_blank">Examples</a> folder.
 	</div>
 	<div class="images">
 
